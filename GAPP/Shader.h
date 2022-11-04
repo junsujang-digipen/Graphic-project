@@ -22,14 +22,22 @@ class Shader {
 public:
 	Shader();
 	~Shader();
-	GLuint compileShader(GLuint ShaderType, const char* source);
+
+	const std::string getShaderSourceFromFile(const char* path);
+
+	GLuint compileShader(GLuint ShaderType, const std::vector<std::string> source);
 	void attachShader(GLuint shdr);
 	void linkProgram();
 	GLuint getHandle();
 	void useProgram();
 	void unuseProgram();
 
+	void sendUniform3fv(const GLchar* name, const glm::vec3& data);
 	void sendUniformMatrix4fv(const GLchar* name, const glm::mat4& data);
 	void sendUniformMatrix3fv(const GLchar* name, const glm::mat3& data);
 
 };
+
+namespace ShaderHelper {
+	const std::string getShaderSourceFromFile(const char* path);
+}

@@ -11,6 +11,11 @@ Creation date: 09/30/2022
 End Header --------------------------------------------------------*/
 #pragma once
 #include "glm/glm.hpp"
+
+//#include <vector>
+//#include <GL/glew.h>
+//#include <memory>
+
 class Shader;
 class OBJLoader;
 class Entity {
@@ -41,9 +46,9 @@ public:
 	void setRotate(const glm::vec3 &r);
 	void GetDataForOBJLoader(OBJLoader& objLoader);
 
-	void load();
-	void unload();
-	void update(double dt);
-	void draw();
-	void drawNormal(int num);
+	virtual void load();
+	virtual void unload();
+	virtual void update(double dt);
+	virtual void draw();
+	virtual void drawNormal(int num);
 };

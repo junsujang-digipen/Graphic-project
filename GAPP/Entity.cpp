@@ -106,9 +106,9 @@ void Entity::update(double /*dt*/)
 
 void Entity::draw()
 {
-	objShader->sendUniformMatrix4fv("modelToWorldMat", objectMatrix);
 	glm::mat3 u_normal = glm::transpose(glm::inverse(objectMatrix));
 	objShader->sendUniformMatrix3fv("u_normalMatrix", u_normal);
+	objShader->sendUniformMatrix4fv("modelToWorldMat", objectMatrix);
 
 	objShader->useProgram();
 	glBindVertexArray(vao);

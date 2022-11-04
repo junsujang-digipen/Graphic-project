@@ -18,86 +18,7 @@ End Header --------------------------------------------------------*/
 #include "Shader.h"
 #include "Renderer.h"
 #include "Entity.h"
-const char* Vshdr{ R"(
-#version 400 core
-layout(location = 0) in vec3 modelPosition;
-
-layout(location = 1) in vec3 a_normal;
-out vec3 v_normal;
-out vec3 v_pos;
-
-uniform mat4 modelToWorldMat;
-uniform mat4 WorldToCameraMat;
-uniform mat3 u_normalMatrix;
-
-void main()
-{
-	v_normal = u_normalMatrix * a_normal;
-	v_pos = vec3(modelToWorldMat*vec4(modelPosition,1));
-	gl_Position.xyzw = WorldToCameraMat*modelToWorldMat*vec4(modelPosition,1);
-	//gl_Position.w = 1.0;
-}
-)" };
-const char* Fshdr{ R"(
-#version 400 core
-
-uniform vec3 u_light = vec3(0., 100., 100.);
-uniform vec3 u_light_col = vec3(1., 1., 1.);
-uniform vec3 u_ambient = vec3(0.5);
-uniform vec3 u_materialCol = vec3(1.0, 1.0, 1.0);
-uniform vec3 cameraPos = vec3(0.,100.,100.);
-
-in vec3 v_normal;
-in vec3 v_pos;
-
-out vec4 col;
-
-void main()
-{
-	float specularStrength = 0.5;
-	float shininess = 10.;
-	float ambientStrength = 0.1;
-
-	vec3  n  = normalize(v_normal);
-    vec3  l  = normalize(u_light - v_pos);
-    float nl = max(dot(n, l), 0.);
-
-	vec3 viewDir = normalize(cameraPos - v_pos);
-	vec3 reflectDir = reflect(-l, n);  
-	float sf = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-	
-	vec3 diffuse = nl*u_light_col;
-	vec3 specular = specularStrength * sf * u_light_col;	
-    vec3 ambient = ambientStrength * u_ambient * u_light_col;
-
-	vec3 color = (ambient + diffuse + specular) * u_materialCol;
-	col = vec4(color,1.0);
-}
-)" };
-
-const char* VshdrNormal{ R"(
-#version 400 core
-
-layout(location = 2) in vec3 modelPosition;
-
-uniform mat4 modelToWorldMat;
-uniform mat4 WorldToCameraMat;
-
-void main()
-{
-	gl_Position.xyzw = WorldToCameraMat*modelToWorldMat*vec4(modelPosition,1);
-}
-)" };
-const char* FshdrNormal{ R"(
-#version 400 core
-
-out vec4 col;
-
-void main()
-{
-	col = vec4(1.0);
-}
-)" };
+#include "Light.h"
 
 GLuint shdrProgram{};
 GLuint shdrProgramNormal{};
@@ -111,12 +32,35 @@ void TestScene::Load()
 	camera.setRotate({ glm::radians(-45.f),glm::radians(/*36.f*/0.f),0.f });
 	camera.Update(0.01);
 
+	
+	const std::string Vshdr{ShaderHelper::getShaderSourceFromFile("../Shaders/C_DiffuseShader.vert")};
+	const std::string Fshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/C_DiffuseShader.frag")};
+	const std::string VshdrNormal{ ShaderHelper::getShaderSourceFromFile("../Shaders/C_BasicShader.vert")};
+	const std::string FshdrNormal{ ShaderHelper::getShaderSourceFromFile("../Shaders/C_BasicShader.frag")};
+
+	//lightings
+		const std::string vPhongLightingshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_PhongLightingShader.vert") };
+		const std::string fPhongLightingshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_PhongLightingShader.frag") };
+
+		const std::string vPhongShadingshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_PhongShadingShader.vert") };
+		const std::string fPhongShadingshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_PhongShadingShader.frag") };
+
+		const std::string vBlinnShadingshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_BlinnShadingShader.vert") };
+		const std::string fBlinnShadingshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_BlinnShadingShader.frag") };
+
+		const std::string commonFunctionShdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/FF_CommonFunctions.glsl") };
+		const std::string shaderVersion{ ShaderHelper::getShaderSourceFromFile("../Shaders/FB_Version.glsl") };
+		const std::string LightSturctShdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/FS_LightStruct.glsl") };
+		const std::string MaterialStructShdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/FS_MaterialStruct.glsl") };
+
+	//
+
 	diffuseShader = std::make_shared<Shader>();
 	NormalShdrProgram = std::make_shared<Shader>();
 	//Shader
 	{
-		GLuint vshdr = diffuseShader->compileShader(GL_VERTEX_SHADER, Vshdr);
-		GLuint fshdr = diffuseShader->compileShader(GL_FRAGMENT_SHADER, Fshdr);
+		GLuint vshdr = diffuseShader->compileShader(GL_VERTEX_SHADER, { shaderVersion, commonFunctionShdr, vBlinnShadingshdr });
+		GLuint fshdr = diffuseShader->compileShader(GL_FRAGMENT_SHADER, { shaderVersion, LightSturctShdr, MaterialStructShdr, commonFunctionShdr,fBlinnShadingshdr });
 		diffuseShader->attachShader(vshdr);
 		diffuseShader->attachShader(fshdr);
 		diffuseShader->linkProgram();
@@ -124,8 +68,8 @@ void TestScene::Load()
 	}
 	//shader normal
 	{
-		GLuint vshdr = NormalShdrProgram->compileShader(GL_VERTEX_SHADER, VshdrNormal);
-		GLuint fshdr = NormalShdrProgram->compileShader(GL_FRAGMENT_SHADER, FshdrNormal);
+		GLuint vshdr = NormalShdrProgram->compileShader(GL_VERTEX_SHADER, { VshdrNormal });
+		GLuint fshdr = NormalShdrProgram->compileShader(GL_FRAGMENT_SHADER, {FshdrNormal});
 		NormalShdrProgram->attachShader(vshdr);
 		NormalShdrProgram->attachShader(fshdr);
 		NormalShdrProgram->linkProgram();
@@ -179,11 +123,12 @@ void TestScene::Load()
 	}
 	//sphere
 	{
-		for (int i = 0; i < 8; ++i) {
+		const int SpMax{ 16 };
+		for (int i = 0; i < SpMax; ++i) {
 			ObjSpheres.push_back(std::make_shared<Entity>());
 			OBJLoader Temp{};
 			MakeSphereData(20, 20, Temp.VertexDatas, Temp.VertexNormalDatas, Temp.FaceNormalDatas, Temp.idxDatas);
-			float now = (float)i / 8;
+			float now = (float)i / SpMax;
 			float alpha = now * 3.14f * 2.f;
 			glm::vec3 pos = glm::vec3{ ObjCircleLine->scale.x/2.f * sin(alpha),0.f,ObjCircleLine->scale.x/2.f * cos(alpha) };
 			ObjSpheres[i]->setPos(pos);
@@ -199,6 +144,8 @@ void TestScene::Load()
 
 void TestScene::Update(double dt)
 {
+	const int SpMax{ 16 };
+
 	time += dt;
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -207,9 +154,10 @@ void TestScene::Update(double dt)
 	ImGui::SliderInt("OBJ Number", &nowObj, 0, 4);
 	ImGui::SliderFloat("OBJ rotate", &ObjRotate, 0.f, 6.28f);
 	ImGui::SliderFloat("Orbit speed", &orbitSpeed, 0.f, 2.f);
+	ImGui::SliderInt("Orbit number", &SpCurrNum, 1, SpMax);
 
-	for (int i = 0; i < ObjSpheres.size(); ++i) {
-		float now = (float)i / ObjSpheres.size();
+	for (int i = 0; i < SpCurrNum; ++i) {
+		float now = (float)i / SpCurrNum;
 		float alpha = now * 3.14f * 2.f + (float)(time)* orbitSpeed;
 		glm::vec3 pos = glm::vec3{ ObjCircleLine->scale.x/2.f * sin(alpha),0.f,ObjCircleLine->scale.x/2.f * cos(alpha) };
 		ObjSpheres[i]->setPos(pos);
@@ -229,10 +177,15 @@ void TestScene::Draw()
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LESS);
 
-	for (auto& ObjSphere : ObjSpheres) {
-		ObjSphere->draw();
+	glm::vec3 lightEmissive{255.f};
+	//diffuseShader->sendUniform3fv("lightSources[0].emissive", lightEmissive);
+
+
+
+	for (int i = 0; i < SpCurrNum;++i) {
+		ObjSpheres[i]->draw();
 		if (normalDrawState != 0) {
-			ObjSphere->drawNormal(normalDrawState);
+			ObjSpheres[i]->drawNormal(normalDrawState);
 		}
 	}
 	Obj[nowObj]->draw();

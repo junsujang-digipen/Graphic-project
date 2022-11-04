@@ -11,6 +11,8 @@ Creation date: 09/29/2022
 End Header --------------------------------------------------------*/
 #include "pch.h"
 #include "Shader.h"
+#include <fstream>
+#include <sstream>
 
 Shader::Shader()
 {
@@ -23,11 +25,35 @@ Shader::~Shader()
 	glDeleteProgram(shdrProgram);
 }
 
-GLuint Shader::compileShader(GLuint ShaderType, const char* source)
+const std::string ShaderHelper::getShaderSourceFromFile(const char* path)
+{
+	std::fstream file{ path };
+	std::cout << "Open file: " << path << std::endl;
+	if (file.is_open() ==false) {
+		std::cout << "Open file failed" << std::endl;
+	}
+	std::stringstream readString{};
+	readString << file.rdbuf();
+
+	file.close();
+	std::cout << "Close file" << std::endl;
+	return readString.str();
+}
+
+GLuint Shader::compileShader(GLuint ShaderType, const std::vector<std::string> source)
 {
 	GLuint shdr{ glCreateShader(ShaderType) };
-	const char* sptr = source;
-	glShaderSource(shdr, 1, &sptr, nullptr);
+
+	std::vector<const char*> sptr{};
+	std::vector<GLint> lptr{};
+
+
+	for (auto& s:source) {
+		sptr.push_back(s.c_str());
+		lptr.push_back((GLint)s.size());
+	}
+
+	glShaderSource(shdr, (GLsizei)source.size(), sptr.data(), lptr.data());
 	glCompileShader(shdr);
 	GLint shader_compiled;
 	glGetShaderiv(shdr, GL_COMPILE_STATUS, &shader_compiled);
@@ -83,6 +109,19 @@ void Shader::useProgram()
 void Shader::unuseProgram()
 {
 	glUseProgram(0);
+}
+
+void Shader::sendUniform3fv(const GLchar* name, const glm::vec3& data)
+{
+	useProgram();
+	GLint loc = glGetUniformLocation(shdrProgram, name);
+	if (loc >= 0) {
+		glUniform3fv(loc, 1, &data.x);
+	}
+	else {
+		std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
+	}
+	unuseProgram();
 }
 
 void Shader::sendUniformMatrix4fv(const GLchar* name, const glm::mat4& data)

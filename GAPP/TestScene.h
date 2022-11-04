@@ -23,12 +23,16 @@ class TestScene :public Scene {
 	std::vector<std::shared_ptr<Entity>> ObjSpheres{};
 	std::shared_ptr<Entity> ObjCircleLine{};
 	
+	int SpCurrNum{1};
+
 	double time{};
 	float orbitSpeed{0.1f};
 	int normalDrawState{0};
 	int nowObj{ 0 };
 	float ObjRotate{0.f};
+
 public:
+	TestScene() = default;
 	void Load() override;
 	void Update(double dt) override;
 	void Draw()  override;

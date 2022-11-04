@@ -109,6 +109,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GAPP.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Renderer.h" />
@@ -121,6 +122,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GAPP.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="OBJLoader.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
