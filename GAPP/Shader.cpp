@@ -111,6 +111,32 @@ void Shader::unuseProgram()
 	glUseProgram(0);
 }
 
+void Shader::sendUniform1iv(const GLchar* name, const int& data)
+{
+	useProgram();
+	GLint loc = glGetUniformLocation(shdrProgram, name);
+	if (loc >= 0) {
+		glUniform1iv(loc, 1, &data);
+	}
+	else {
+		std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
+	}
+	unuseProgram();
+}
+
+void Shader::sendUniform1fv(const GLchar* name, const float& data)
+{
+	useProgram();
+	GLint loc = glGetUniformLocation(shdrProgram, name);
+	if (loc >= 0) {
+		glUniform1fv(loc, 1, &data);
+	}
+	else {
+		std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
+	}
+	unuseProgram();
+}
+
 void Shader::sendUniform3fv(const GLchar* name, const glm::vec3& data)
 {
 	useProgram();

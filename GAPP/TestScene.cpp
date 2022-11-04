@@ -125,7 +125,7 @@ void TestScene::Load()
 	{
 		const int SpMax{ 16 };
 		for (int i = 0; i < SpMax; ++i) {
-			ObjSpheres.push_back(std::make_shared<Entity>());
+			ObjSpheres.push_back(std::make_shared<Light>());
 			OBJLoader Temp{};
 			MakeSphereData(20, 20, Temp.VertexDatas, Temp.VertexNormalDatas, Temp.FaceNormalDatas, Temp.idxDatas);
 			float now = (float)i / SpMax;
@@ -135,9 +135,11 @@ void TestScene::Load()
 			ObjSpheres[i]->setScale(glm::vec3(10.f));
 			ObjSpheres[i]->GetDataForOBJLoader(Temp);
 			ObjSpheres[i]->load();
-
+			std::string lightLniformName{ "lightSources[" + std::to_string(i) + ("]") };
+			dynamic_cast<Light*>(ObjSpheres[i].get())->sendLightDataUniform(diffuseShader, lightLniformName);
 			ObjSpheres[i]->objShader = diffuseShader;
 			ObjSpheres[i]->normalVectorShader = NormalShdrProgram;
+			
 		}
 	}
 }
@@ -181,8 +183,10 @@ void TestScene::Draw()
 	//diffuseShader->sendUniform3fv("lightSources[0].emissive", lightEmissive);
 
 
-
+	diffuseShader->sendUniform1iv("numCurLights", SpCurrNum);
 	for (int i = 0; i < SpCurrNum;++i) {
+		std::string lightLniformName{ "lightSources[" + std::to_string(i) + ("]") };
+		dynamic_cast<Light*>(ObjSpheres[i].get())->sendLightDataUniform(diffuseShader, lightLniformName);
 		ObjSpheres[i]->draw();
 		if (normalDrawState != 0) {
 			ObjSpheres[i]->drawNormal(normalDrawState);

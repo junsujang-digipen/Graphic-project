@@ -12,34 +12,39 @@ End Header --------------------------------------------------------*/
 #pragma once
 #include "Entity.h"
 struct LightData {
-    int type{};
+    int type{1};
     //directional light == 0
-    glm::vec3 direction{};
+    glm::vec3 direction{0.,1.f,0.};
     //point light == 1
-    glm::vec3 position{};
-    float constant{};
-    float linear{};
-    float quadratic{};
+    glm::vec3 position{0.f,0.f,0.f};
+    float constant{0.7f,};
+    float linear{0.009f};
+    float quadratic{0.0005f};
     //spot light == 2
-    float angle{};
+    float innerAngle{60.f};
+    float outerAngle{ 60.f };
 
-    glm::vec3 ambient{};
-    glm::vec3 diffuse{};
-    glm::vec3 specular{};
-    glm::vec3 emissive{};
+    glm::vec3 ambient{ 1.f,1.f,1.f };
+    glm::vec3 diffuse{ 0.5f,0.5f,0.5f };
+    glm::vec3 specular{ 0.5f,0.5f,0.5f };
+    glm::vec3 emissive{ 0.f,0.f,0.f };
 };
 
 class Light :public Entity {
 
     LightData lightData{};
+    //bool shouldSendUniformData{true};
 
+    //std::shared_ptr<Shader> lightingShader{};
 
 public:
     //void load()override;
     //void unload()override;
-    //void update(double dt)override;
+    void update(double dt)override;
     //void draw()override;
+    void sendLightDataUniform(std::shared_ptr<Shader> shader, const std::string uniformName);
+    void sendLightPositionDataUniform(std::shared_ptr<Shader> shader, const std::string uniformName);
 
-    LightData getLightData() { return lightData; };
-    LightData& refLightData() { return lightData; };
+    LightData getLightData();
+    LightData& refLightData();
 };

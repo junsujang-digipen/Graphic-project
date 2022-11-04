@@ -9,7 +9,8 @@ struct Light {
     float linear;
     float quadratic;
     //spot light == 2
-    float angle;
+    float innerAngle;
+    float outerAngle;
 
     vec3 ambient;
     vec3 diffuse;

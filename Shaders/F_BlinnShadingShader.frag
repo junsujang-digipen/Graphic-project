@@ -12,7 +12,7 @@ uniform Light lightSources[MAX_LIGHT_NUMBERS];
 uniform int numCurLights = 1;
 //
 
-uniform Material material;
+uniform Material material = Material(vec3(0.5),vec3(0.5),vec3(0.5),10.);
 
 void main()
 {
@@ -40,9 +40,11 @@ void main()
 		vec3 specular = lightSources[i].specular * material.specular * sf;	
 
 		//compute Att
+		float distLight = length(lightSources[i].position);
+		float Att = min(1.0f/(lightSources[i].constant + lightSources[i].linear*distLight + lightSources[i].quadratic*distLight*distLight),1.0);
 		//compute spot light
 
-		color += lightSources[i].emissive + (ambient + diffuse + specular);
+		color += lightSources[i].emissive + Att*(ambient + diffuse + specular);
 	}
 	
 	col = vec4(color,1.0);
