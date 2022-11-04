@@ -1,5 +1,8 @@
 
-uniform vec3 cameraPos = vec3(0.,100.,100.);
+uniform vec3 cameraPos = vec3(0.,130.,150.);
+uniform float cameraNear = 0.1;
+uniform float cameraFar = 200.;
+uniform vec3 fogCol = vec3(0.,0.,0.);
 
 in vec3 v_normal;
 in vec3 v_pos;
@@ -44,8 +47,13 @@ void main()
 		float Att = min(1.0f/(lightSources[i].constant + lightSources[i].linear*distLight + lightSources[i].quadratic*distLight*distLight),1.0);
 		//compute spot light
 
+
 		color += lightSources[i].emissive + Att*(ambient + diffuse + specular);
 	}
-	
+
+	//fog
+	float fog = (cameraFar - length(cameraPos - v_pos) )/(cameraFar - cameraNear);
+
+	color = color*fog + (1-fog)*fogCol;
 	col = vec4(color,1.0);
 }
