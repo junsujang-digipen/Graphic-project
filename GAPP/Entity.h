@@ -12,9 +12,9 @@ End Header --------------------------------------------------------*/
 #pragma once
 #include "glm/glm.hpp"
 
-//#include <vector>
-//#include <GL/glew.h>
-//#include <memory>
+#include <vector>
+#include <GL/glew.h>
+#include <memory>
 
 class Shader;
 class OBJLoader;

@@ -25,6 +25,10 @@ GLuint shdrProgramNormal{};
 Camera camera{};
 glm::mat4 WTC{};
 
+TestScene::TestScene(): Scene(),SpCurrNum(1)
+{
+}
+
 void TestScene::Load()
 {
 	camera.init();
@@ -107,6 +111,19 @@ void TestScene::Load()
 			Obj[i]->normalVectorShader = NormalShdrProgram;
 		}
 	}
+	//plane
+	{
+		ObjPlane = std::make_shared<Entity>();
+		OBJLoader Temp{};
+		Temp.FileLoad("cube2.obj");
+		ObjPlane->setPos(glm::vec3(0.f, -50.f, 0.f));
+		ObjPlane->setScale(glm::vec3(1000.f,10.f, 1000.f));
+		ObjPlane->GetDataForOBJLoader(Temp);
+		ObjPlane->load();
+
+		ObjPlane->objShader = diffuseShader;
+		ObjPlane->normalVectorShader = NormalShdrProgram;
+	}
 	//Orbit
 	{
 		ObjCircleLine = std::make_shared<Entity>();
@@ -147,16 +164,67 @@ void TestScene::Load()
 void TestScene::Update(double dt)
 {
 	const int SpMax{ 16 };
-
+	static const float maxForRandom{ 1000 };
+	static bool isRotation{true};
 	time += dt;
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+	{
+		//scenario
+		if (ImGui::Button("Scenario 1")) {
+			IsScenario3 = false;
+			for (int i = 0; i < SpMax; ++i) {
+				dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().ambient = glm::vec3{1.};
+			}
+		}
+		if (ImGui::Button("Scenario 2")) {
+			IsScenario3 = false;
+			for (int i = 0; i < SpMax; ++i) {
+				dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().ambient = glm::vec3{ ((int)(time*(i*i + 10))% (int)maxForRandom)/ maxForRandom };
+			}
+		}
+		if (ImGui::Button("Scenario 3")) {
+			IsScenario3 = true;
+			for (int i = 0; i < SpMax; ++i) {
+				dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().ambient = glm::vec3{ ((int)(time * (i * i + 10)) % (int)maxForRandom) / maxForRandom };
+			}
+		}
+	}
+	{
+		static char* currItem{};
+		if (ImGui::BeginCombo("Camera choose", currItem) == true) {
+			bool one{ false };
+			bool two{ false };
+
+			ImGui::Selectable("Free", &one);
+			ImGui::Selectable("Ball", &two);
+			//static float saveHeight{10.f};
+			if (one == true) {
+
+			}
+			if (two == true) {
+
+			}
+
+			ImGui::EndCombo();
+		}
+	}
+	if (ImGui::Button("Reload shader")) {
+		//shader reload
+	}
 	ImGui::SliderInt("Normal", &normalDrawState, 0, 3);
 	ImGui::SliderInt("OBJ Number", &nowObj, 0, 4);
 	ImGui::SliderFloat("OBJ rotate", &ObjRotate, 0.f, 6.28f);
-	ImGui::SliderFloat("Orbit speed", &orbitSpeed, 0.f, 2.f);
-	ImGui::SliderInt("Orbit number", &SpCurrNum, 1, SpMax);
+
+	if (ImGui::BeginMenu("Light control")) {
+		ImGui::SliderFloat("Orbit speed", &orbitSpeed, 0.f, 2.f);
+		// toggle rotation on off
+		ImGui::Checkbox("Rotation on off", &isRotation);
+
+		ImGui::SliderInt("Orbit number", &SpCurrNum, 1, SpMax);
+		ImGui::EndMenu();
+	}
 
 	for (int i = 0; i < SpCurrNum; ++i) {
 		float now = (float)i / SpCurrNum;
@@ -168,6 +236,7 @@ void TestScene::Update(double dt)
 	Obj[nowObj]->setRotate({0.f,ObjRotate,0.f});
 	Obj[nowObj]->update(dt);
 	ObjCircleLine->update(dt);
+	ObjPlane->update(dt);
 }
 
 void TestScene::Draw()
@@ -199,6 +268,8 @@ void TestScene::Draw()
 		Obj[nowObj]->drawNormal(normalDrawState);
 	}
 
+	ObjPlane->draw();
+
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
@@ -212,4 +283,5 @@ void TestScene::Unload()
 		ObjSphere->unload();
 	}
 	ObjCircleLine->unload();
+	ObjPlane->unload();
 }

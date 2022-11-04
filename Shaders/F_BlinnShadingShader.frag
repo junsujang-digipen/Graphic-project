@@ -1,7 +1,7 @@
 
 uniform vec3 cameraPos = vec3(0.,130.,150.);
 uniform float cameraNear = 0.1;
-uniform float cameraFar = 200.;
+uniform float cameraFar = 1000.;
 uniform vec3 fogCol = vec3(0.,0.,0.);
 
 in vec3 v_normal;

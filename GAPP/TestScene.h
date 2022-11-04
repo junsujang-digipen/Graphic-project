@@ -22,7 +22,8 @@ class TestScene :public Scene {
 	std::vector<std::shared_ptr<Entity>> Obj{};
 	std::vector<std::shared_ptr<Entity>> ObjSpheres{};
 	std::shared_ptr<Entity> ObjCircleLine{};
-	
+	std::shared_ptr<Entity> ObjPlane{};
+
 	int SpCurrNum{1};
 
 	double time{};
@@ -31,8 +32,10 @@ class TestScene :public Scene {
 	int nowObj{ 0 };
 	float ObjRotate{0.f};
 
+	bool IsScenario3{false};
+
 public:
-	TestScene() = default;
+	TestScene();
 	void Load() override;
 	void Update(double dt) override;
 	void Draw()  override;
