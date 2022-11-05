@@ -6,7 +6,7 @@ uniform vec3 fogCol = vec3(0.,0.,0.);
 
 in vec3 v_normal;
 in vec3 v_pos;
-
+in vec3 a_pos;
 out vec4 col;
 
 //lights
@@ -15,10 +15,23 @@ uniform Light lightSources[MAX_LIGHT_NUMBERS];
 uniform int numCurLights = 1;
 //
 
-uniform Material material = Material(vec3(0.5),vec3(0.5),vec3(0.5),10.);
+uniform vec3 MatAmbient = vec3(0.5);
+uniform sampler2D MatDiffuse;
+uniform sampler2D MatSpecular;
+float MatShininess = 10.;
+uniform vec3 MatEmissive = vec3(0.);
+
+//tex
+uniform vec3 boundMax = vec3(1.);
+uniform vec3 boundMin = vec3(-1.);
+
 
 void main()
 {
+	//texture(MatDiffuse, TexCoord).rgb
+	//texture(MatSpecular, TexCoord).rgb
+	vec2 TexCoord = calcSphereTexCoord(a_pos,boundMin,boundMax);
+	Material material = Material(MatAmbient,texture(MatDiffuse, TexCoord).rgb,texture(MatSpecular, TexCoord).rgb,MatShininess,MatEmissive);
 	vec3  n  = normalize(v_normal);
 	vec3 viewDir = normalize(cameraPos - v_pos);
 	vec3 color = vec3(0);
@@ -44,11 +57,19 @@ void main()
 
 		//compute Att
 		float distLight = length(lightSources[i].position);
-		float Att = min(1.0f/(lightSources[i].constant + lightSources[i].linear*distLight + lightSources[i].quadratic*distLight*distLight),1.0);
+		float Att;
+		
+		if(lightSources[i].type == 0){
+			Att = 1.f;
+		}else{
+			Att = min(1.0f/(lightSources[i].constant + lightSources[i].linear*distLight + lightSources[i].quadratic*distLight*distLight),1.0);
+		}
 		//compute spot light
+		
+		
+		
 
-
-		color += lightSources[i].emissive + Att*(ambient + diffuse + specular);
+		color +=  material.emissive + Att*(ambient + diffuse + specular);
 	}
 
 	//fog

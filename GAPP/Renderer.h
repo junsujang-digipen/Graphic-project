@@ -23,4 +23,6 @@ public:
 	void deleteBuffer(unsigned bufferType,GLuint* vbo);
 	void BufferData(unsigned bufferType,GLuint vbo,  const std::vector<glm::vec3>& data);//
 	void BufferData(unsigned bufferType, GLuint vbo, const std::vector<GLuint>& data);//
+	
+	
 };

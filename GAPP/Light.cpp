@@ -50,7 +50,6 @@ void Light::sendLightDataUniform(std::shared_ptr<Shader> shader, const std::stri
 	shader->sendUniform3fv((uniformName + ".ambient").c_str(), lightData.ambient);
 	shader->sendUniform3fv((uniformName + ".diffuse").c_str(), lightData.diffuse);
 	shader->sendUniform3fv((uniformName + ".specular").c_str(), lightData.specular);
-	shader->sendUniform3fv((uniformName + ".emissive").c_str(), lightData.emissive);
 
 }
 

@@ -13,9 +13,10 @@ End Header --------------------------------------------------------*/
 #include "Scene.h"
 #include <memory>
 #include <vector>
+#include "glm/glm.hpp"
 class Shader;
 class Entity;
-
+class Texture;
 class TestScene :public Scene {
 	std::shared_ptr<Shader> diffuseShader{};
 	std::shared_ptr<Shader> NormalShdrProgram{};
@@ -23,6 +24,10 @@ class TestScene :public Scene {
 	std::vector<std::shared_ptr<Entity>> ObjSpheres{};
 	std::shared_ptr<Entity> ObjCircleLine{};
 	std::shared_ptr<Entity> ObjPlane{};
+
+	std::vector<std::shared_ptr<Texture>> textures{};
+	glm::vec3 ObjAmbient{0.5f};
+	glm::vec3 ObjEmissive{ 0.f };
 
 	int SpCurrNum{1};
 

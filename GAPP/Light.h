@@ -27,7 +27,6 @@ struct LightData {
     glm::vec3 ambient{ 1.f,1.f,1.f };
     glm::vec3 diffuse{ 0.5f,0.5f,0.5f };
     glm::vec3 specular{ 0.5f,0.5f,0.5f };
-    glm::vec3 emissive{ 0.f,0.f,0.f };
 };
 
 class Light :public Entity {

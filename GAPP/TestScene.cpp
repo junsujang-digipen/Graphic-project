@@ -19,6 +19,8 @@ End Header --------------------------------------------------------*/
 #include "Renderer.h"
 #include "Entity.h"
 #include "Light.h"
+#include <stb_image.h>
+#include "Texture.h"
 
 GLuint shdrProgram{};
 GLuint shdrProgramNormal{};
@@ -110,6 +112,15 @@ void TestScene::Load()
 			Obj[i]->objShader = diffuseShader;
 			Obj[i]->normalVectorShader = NormalShdrProgram;
 		}
+
+		{//texture
+			textures.push_back(std::make_shared<Texture>("metal_roof_diff_512x512.png"));
+			textures.push_back(std::make_shared<Texture>("metal_roof_spec_512x512.png"));
+			textures[0]->sendTextureDataUniform(diffuseShader,"MatDiffuse");
+			textures[1]->sendTextureDataUniform(diffuseShader,"MatSpecular");
+			textures[0]->bindTexture();
+			textures[1]->bindTexture();
+		}
 	}
 	//plane
 	{
@@ -154,7 +165,7 @@ void TestScene::Load()
 			ObjSpheres[i]->load();
 			std::string lightLniformName{ "lightSources[" + std::to_string(i) + ("]") };
 			dynamic_cast<Light*>(ObjSpheres[i].get())->sendLightDataUniform(diffuseShader, lightLniformName);
-			ObjSpheres[i]->objShader = diffuseShader;
+			ObjSpheres[i]->objShader = NormalShdrProgram;
 			ObjSpheres[i]->normalVectorShader = NormalShdrProgram;
 			
 		}
@@ -166,7 +177,9 @@ void TestScene::Update(double dt)
 	const int SpMax{ 16 };
 	static const float maxForRandom{ 1000 };
 	static bool isRotation{true};
-	time += dt;
+	if (isRotation == true) {
+		time += dt;
+	}
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -181,13 +194,21 @@ void TestScene::Update(double dt)
 		if (ImGui::Button("Scenario 2")) {
 			IsScenario3 = false;
 			for (int i = 0; i < SpMax; ++i) {
-				dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().ambient = glm::vec3{ ((int)(time*(i*i + 10))% (int)maxForRandom)/ maxForRandom };
+				const float randR{ ((int)(time * (i * i + 10)) % (int)maxForRandom) / maxForRandom };
+				const float randG{ ((int)(time * (i * i + 700)) % (int)maxForRandom) / maxForRandom };
+				const float randB{ ((int)(time * (i * i + 250)) % (int)maxForRandom) / maxForRandom };
+
+				dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().ambient = glm::vec3{ randR,randG,randB };
 			}
 		}
 		if (ImGui::Button("Scenario 3")) {
 			IsScenario3 = true;
 			for (int i = 0; i < SpMax; ++i) {
-				dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().ambient = glm::vec3{ ((int)(time * (i * i + 10)) % (int)maxForRandom) / maxForRandom };
+				const float randR{ ((int)(time * (i * i + 10)) % (int)maxForRandom) / maxForRandom };
+				const float randG{ ((int)(time * (i * i + 700)) % (int)maxForRandom) / maxForRandom };
+				const float randB{ ((int)(time * (i * i + 250)) % (int)maxForRandom) / maxForRandom };
+
+				dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().ambient = glm::vec3{ randR,randG,randB };
 			}
 		}
 	}
@@ -213,10 +234,13 @@ void TestScene::Update(double dt)
 	if (ImGui::Button("Reload shader")) {
 		//shader reload
 	}
-	ImGui::SliderInt("Normal", &normalDrawState, 0, 3);
-	ImGui::SliderInt("OBJ Number", &nowObj, 0, 4);
-	ImGui::SliderFloat("OBJ rotate", &ObjRotate, 0.f, 6.28f);
+	if (ImGui::BeginMenu("Obj control")) {
+		ImGui::SliderInt("Normal", &normalDrawState, 0, 3);
+		ImGui::SliderInt("OBJ Number", &nowObj, 0, 4);
+		ImGui::SliderFloat("OBJ rotate", &ObjRotate, 0.f, 6.28f);
+		ImGui::EndMenu();
 
+	}
 	if (ImGui::BeginMenu("Light control")) {
 		ImGui::SliderFloat("Orbit speed", &orbitSpeed, 0.f, 2.f);
 		// toggle rotation on off
@@ -247,9 +271,6 @@ void TestScene::Draw()
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LESS);
-
-	glm::vec3 lightEmissive{255.f};
-	//diffuseShader->sendUniform3fv("lightSources[0].emissive", lightEmissive);
 
 
 	diffuseShader->sendUniform1iv("numCurLights", SpCurrNum);
