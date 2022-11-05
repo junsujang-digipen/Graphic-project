@@ -25,7 +25,7 @@ class GAPP {
 	
 	//Event
 	GLFWwindow* window;
-	int windowWidth{ 800 }, windowHeight{600};
+	int windowWidth{ 1600 }, windowHeight{1400};
 public:
 
 	GAPP() = default;

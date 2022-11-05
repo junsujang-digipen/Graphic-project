@@ -38,5 +38,7 @@ public:
 	void Init();
 	void Update(double dt);
 	void setNextScene(int i);
-
+	void exit() {
+		nowState = SceneManagerState::Exit;
+	}
 };

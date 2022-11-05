@@ -21,6 +21,7 @@ End Header --------------------------------------------------------*/
 #include "Light.h"
 #include <stb_image.h>
 #include "Texture.h"
+#include <random>
 
 GLuint shdrProgram{};
 GLuint shdrProgramNormal{};
@@ -54,6 +55,9 @@ void TestScene::Load()
 		const std::string vBlinnShadingshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_BlinnShadingShader.vert") };
 		const std::string fBlinnShadingshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_BlinnShadingShader.frag") };
 
+		const std::string vLightshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_LightingShaderForLight.vert") };
+		const std::string fLightshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_LightingShaderForLight.frag") };
+
 		const std::string commonFunctionShdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/FF_CommonFunctions.glsl") };
 		const std::string shaderVersion{ ShaderHelper::getShaderSourceFromFile("../Shaders/FB_Version.glsl") };
 		const std::string LightSturctShdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/FS_LightStruct.glsl") };
@@ -63,6 +67,7 @@ void TestScene::Load()
 
 	diffuseShader = std::make_shared<Shader>();
 	NormalShdrProgram = std::make_shared<Shader>();
+	LightShader = std::make_shared<Shader>();
 	//Shader
 	{
 		GLuint vshdr = diffuseShader->compileShader(GL_VERTEX_SHADER, { shaderVersion, commonFunctionShdr, vBlinnShadingshdr });
@@ -81,6 +86,15 @@ void TestScene::Load()
 		NormalShdrProgram->linkProgram();
 		shdrProgramNormal = NormalShdrProgram->getHandle();
 	}
+	//light shader 
+	{
+		GLuint vshdr = LightShader->compileShader(GL_VERTEX_SHADER, { shaderVersion, vLightshdr });
+		GLuint fshdr = LightShader->compileShader(GL_FRAGMENT_SHADER, { shaderVersion,fLightshdr });
+		LightShader->attachShader(vshdr);
+		LightShader->attachShader(fshdr);
+		LightShader->linkProgram();
+		shdrProgram = LightShader->getHandle();
+	}
 	//Uniform data
 	{
 		WTC = { camera.getWorldToCameraToNDC() };
@@ -92,6 +106,11 @@ void TestScene::Load()
 	{
 		WTC = { camera.getWorldToCameraToNDC() };
 		NormalShdrProgram->sendUniformMatrix4fv("WorldToCameraMat", WTC);
+	}
+	//
+	{
+		WTC = { camera.getWorldToCameraToNDC() };
+		LightShader->sendUniformMatrix4fv("WorldToCameraMat", WTC);
 	}
 	//Obj load
 	{
@@ -127,8 +146,8 @@ void TestScene::Load()
 		ObjPlane = std::make_shared<Entity>();
 		OBJLoader Temp{};
 		Temp.FileLoad("cube2.obj");
-		ObjPlane->setPos(glm::vec3(0.f, -50.f, 0.f));
-		ObjPlane->setScale(glm::vec3(1000.f,10.f, 1000.f));
+		ObjPlane->setPos(glm::vec3(0.f, -150.f, 0.f));
+		ObjPlane->setScale(glm::vec3(500.f,10.f, 500.f));
 		ObjPlane->GetDataForOBJLoader(Temp);
 		ObjPlane->load();
 
@@ -165,17 +184,30 @@ void TestScene::Load()
 			ObjSpheres[i]->load();
 			std::string lightLniformName{ "lightSources[" + std::to_string(i) + ("]") };
 			dynamic_cast<Light*>(ObjSpheres[i].get())->sendLightDataUniform(diffuseShader, lightLniformName);
-			ObjSpheres[i]->objShader = NormalShdrProgram;
+			ObjSpheres[i]->objShader = LightShader;
 			ObjSpheres[i]->normalVectorShader = NormalShdrProgram;
 			
 		}
 	}
 }
 
+
+double RanGenerator(double min, double max)
+{
+	static int Seed{10};
+	static std::knuth_b knuthrand(Seed);
+	std::uniform_real_distribution<double> distribution(min, max);
+	return distribution(knuthrand);
+}
+float random(double min = 0.0, double max = 1.0) {
+	return (float)RanGenerator(min,max);
+}
+
+
 void TestScene::Update(double dt)
 {
 	const int SpMax{ 16 };
-	static const float maxForRandom{ 1000 };
+	static const float maxForRandom{ 50 };
 	static bool isRotation{true};
 	if (isRotation == true) {
 		time += dt;
@@ -188,51 +220,100 @@ void TestScene::Update(double dt)
 		if (ImGui::Button("Scenario 1")) {
 			IsScenario3 = false;
 			for (int i = 0; i < SpMax; ++i) {
-				dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().ambient = glm::vec3{1.};
+				dynamic_cast<Light*>(ObjSpheres[i].get())->resetLightData();
 			}
 		}
 		if (ImGui::Button("Scenario 2")) {
 			IsScenario3 = false;
-			for (int i = 0; i < SpMax; ++i) {
-				const float randR{ ((int)(time * (i * i + 10)) % (int)maxForRandom) / maxForRandom };
-				const float randG{ ((int)(time * (i * i + 700)) % (int)maxForRandom) / maxForRandom };
-				const float randB{ ((int)(time * (i * i + 250)) % (int)maxForRandom) / maxForRandom };
 
+			for (int i = 0; i < SpMax; ++i) {
+				dynamic_cast<Light*>(ObjSpheres[i].get())->resetLightData();
+				
+				const float randR{ sin(random() + ObjSpheres[i]->pos.x) };
+				const float randG{ sin(random() +ObjSpheres[i]->pos.y) };
+				const float randB{ sin(random()+ ObjSpheres[i]->pos.z )};
+				//std::cout << randR << " " << randG << " " << randB << std::endl;
 				dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().ambient = glm::vec3{ randR,randG,randB };
 			}
 		}
 		if (ImGui::Button("Scenario 3")) {
 			IsScenario3 = true;
 			for (int i = 0; i < SpMax; ++i) {
-				const float randR{ ((int)(time * (i * i + 10)) % (int)maxForRandom) / maxForRandom };
-				const float randG{ ((int)(time * (i * i + 700)) % (int)maxForRandom) / maxForRandom };
-				const float randB{ ((int)(time * (i * i + 250)) % (int)maxForRandom) / maxForRandom };
+				const float randR{ sin(random() + ObjSpheres[i]->pos.x) };
+				const float randG{ sin(random() + ObjSpheres[i]->pos.y) };
+				const float randB{ sin(random() + ObjSpheres[i]->pos.z) };
 
 				dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().ambient = glm::vec3{ randR,randG,randB };
 			}
 		}
 	}
 	{
-		static char* currItem{};
-		if (ImGui::BeginCombo("Camera choose", currItem) == true) {
+		if (ImGui::BeginMenu("Shader control")) {
+			static char* currItem{};
 			bool one{ false };
 			bool two{ false };
+			bool three{ false };
+			if (ImGui::BeginCombo("Shader Choose", currItem) == true) {
 
-			ImGui::Selectable("Free", &one);
-			ImGui::Selectable("Ball", &two);
-			//static float saveHeight{10.f};
-			if (one == true) {
+				ImGui::Selectable("Phong Lighting", &one);
+				ImGui::Selectable("Phong Shading", &two);
+				ImGui::Selectable("Blinn Shading", &three);
 
+				ImGui::EndCombo();
 			}
-			if (two == true) {
+			if (ImGui::Button("Reload shader")) {
+				//shader reload
 
+				if (one == true) {
+					
+				}
+				if (two == true) {
+
+				}
+				if (three == true) {
+
+				}
 			}
-
-			ImGui::EndCombo();
+			ImGui::EndMenu();
 		}
 	}
-	if (ImGui::Button("Reload shader")) {
-		//shader reload
+
+	{
+		if (ImGui::BeginMenu("Texture control")) {
+			static char* currItem{};
+			if (ImGui::BeginCombo("Shader Choose", currItem) == true) {
+				bool one{ false };
+				bool two{ false };
+				bool three{ false };
+				bool four{ false };
+				bool five{ false };
+
+				ImGui::Selectable("Spherical", &one);
+				ImGui::Selectable("Cylindrical", &two);
+				ImGui::Selectable("Planar", &three);
+				ImGui::Selectable("Planar6", &four);
+				ImGui::Selectable("None", &five);
+
+				if (one == true) {
+					diffuseShader->sendUniform1iv("texMappingType",0);
+				}
+				if (two == true) {
+					diffuseShader->sendUniform1iv("texMappingType", 1);
+				}
+				if (three == true) {
+					diffuseShader->sendUniform1iv("texMappingType", 2);
+				}
+				if (four == true) {
+					diffuseShader->sendUniform1iv("texMappingType", 3);
+				}
+				if (five == true) {
+					diffuseShader->sendUniform1iv("texMappingType", 4);
+				}
+
+				ImGui::EndCombo();
+			}
+			ImGui::EndMenu();
+		}
 	}
 	if (ImGui::BeginMenu("Obj control")) {
 		ImGui::SliderInt("Normal", &normalDrawState, 0, 3);
@@ -247,6 +328,19 @@ void TestScene::Update(double dt)
 		ImGui::Checkbox("Rotation on off", &isRotation);
 
 		ImGui::SliderInt("Orbit number", &SpCurrNum, 1, SpMax);
+
+		for (int i = 0; i < SpCurrNum; ++i) {
+			if (ImGui::BeginMenu(std::string("light " + std::to_string(i) + " control").c_str())) {
+				ImGui::SliderFloat3(std::string("light " + std::to_string(i) + " ambient").c_str(), &dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().ambient.r, 0.f, 1.f);
+				ImGui::SliderFloat3(std::string("light " + std::to_string(i) + " diffuse").c_str(), &dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().diffuse.r, 0.f, 1.f);
+				ImGui::SliderFloat3(std::string("light " + std::to_string(i) + " specular").c_str(), &dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().specular.r, 0.f, 1.f);
+				ImGui::SliderFloat(std::string("light " + std::to_string(i) + " innerCut").c_str(), &dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().innerCut, 0.f, 1.f);
+				ImGui::SliderFloat(std::string("light " + std::to_string(i) + " outerCut").c_str(), &dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().outerCut, 0.f, dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().innerCut);
+				ImGui::SliderInt(std::string("light " + std::to_string(i) + " type").c_str(), &dynamic_cast<Light*>(ObjSpheres[i].get())->refLightData().type, 0, 2);
+				ImGui::EndMenu();
+			}
+		}
+
 		ImGui::EndMenu();
 	}
 
@@ -276,6 +370,7 @@ void TestScene::Draw()
 	diffuseShader->sendUniform1iv("numCurLights", SpCurrNum);
 	for (int i = 0; i < SpCurrNum;++i) {
 		std::string lightLniformName{ "lightSources[" + std::to_string(i) + ("]") };
+		dynamic_cast<Light*>(ObjSpheres[i].get())->setLightDirection(Obj[nowObj]->pos - ObjSpheres[i]->pos);
 		dynamic_cast<Light*>(ObjSpheres[i].get())->sendLightDataUniform(diffuseShader, lightLniformName);
 		ObjSpheres[i]->draw();
 		if (normalDrawState != 0) {
@@ -305,4 +400,5 @@ void TestScene::Unload()
 	}
 	ObjCircleLine->unload();
 	ObjPlane->unload();
+	textures.clear();
 }

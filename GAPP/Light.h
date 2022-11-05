@@ -17,15 +17,15 @@ struct LightData {
     glm::vec3 direction{0.,1.f,0.};
     //point light == 1
     glm::vec3 position{0.f,0.f,0.f};
-    float constant{0.7f,};
+    float constant{1.f,};
     float linear{0.009f};
     float quadratic{0.0005f};
     //spot light == 2
-    float innerAngle{60.f};
-    float outerAngle{ 60.f };
+    float innerCut{0.6f};
+    float outerCut{ 0.5f};
 
-    glm::vec3 ambient{ 1.f,1.f,1.f };
-    glm::vec3 diffuse{ 0.5f,0.5f,0.5f };
+    glm::vec3 ambient{ 0.5f,0.5f,0.5f };
+    glm::vec3 diffuse{ 1.f,1.f,1.f };
     glm::vec3 specular{ 0.5f,0.5f,0.5f };
 };
 
@@ -40,10 +40,12 @@ public:
     //void load()override;
     //void unload()override;
     void update(double dt)override;
-    //void draw()override;
+    void draw()override;
     void sendLightDataUniform(std::shared_ptr<Shader> shader, const std::string uniformName);
     void sendLightPositionDataUniform(std::shared_ptr<Shader> shader, const std::string uniformName);
-
+    
+    void resetLightData();
+    void setLightDirection(glm::vec3 dir);
     LightData getLightData();
     LightData& refLightData();
 };

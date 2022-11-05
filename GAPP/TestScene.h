@@ -20,6 +20,7 @@ class Texture;
 class TestScene :public Scene {
 	std::shared_ptr<Shader> diffuseShader{};
 	std::shared_ptr<Shader> NormalShdrProgram{};
+	std::shared_ptr<Shader> LightShader{};
 	std::vector<std::shared_ptr<Entity>> Obj{};
 	std::vector<std::shared_ptr<Entity>> ObjSpheres{};
 	std::shared_ptr<Entity> ObjCircleLine{};

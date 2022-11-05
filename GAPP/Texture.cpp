@@ -62,6 +62,7 @@ void Texture::bindTexture()
 
 void Texture::unbindTexture()
 {
+    glActiveTexture(GL_TEXTURE0 + textureNumber);
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 

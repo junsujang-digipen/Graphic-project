@@ -57,6 +57,7 @@ void SceneManager::Update(double dt)
 		nowScene->Unload();
 		break;
 	case SceneManager::SceneManagerState::Exit:
+		if (nowScene != nullptr) { nowScene->Unload(); }
 		break;
 	default:
 		break;

@@ -29,12 +29,15 @@ void Light::update(double dt)
 	//	shouldSendUniformData = false;
 	//	sendLightDataUniform();
 	//}
-		lightData.position = pos;
+	lightData.position = pos;
 }
 //
-//void Light::draw()
-//{
-//}
+void Light::draw()
+{
+	objShader->sendUniform3fv("OBJColor", lightData.ambient);
+	Entity::draw();
+
+}
 
 void Light::sendLightDataUniform(std::shared_ptr<Shader> shader, const std::string uniformName)
 {
@@ -45,8 +48,8 @@ void Light::sendLightDataUniform(std::shared_ptr<Shader> shader, const std::stri
 	shader->sendUniform1fv((uniformName + ".constant").c_str(), lightData.constant);
 	shader->sendUniform1fv((uniformName + ".linear").c_str(), lightData.linear);
 	shader->sendUniform1fv((uniformName + ".quadratic").c_str(), lightData.quadratic);
-	//shader->sendUniform1fv((uniformName + ".innerAngle").c_str(), lightData.innerAngle);
-	//shader->sendUniform1fv((uniformName + ".outerAngle").c_str(), lightData.outerAngle);
+	shader->sendUniform1fv((uniformName + ".innerCut").c_str(), lightData.innerCut);
+	shader->sendUniform1fv((uniformName + ".outerCut").c_str(), lightData.outerCut);
 	shader->sendUniform3fv((uniformName + ".ambient").c_str(), lightData.ambient);
 	shader->sendUniform3fv((uniformName + ".diffuse").c_str(), lightData.diffuse);
 	shader->sendUniform3fv((uniformName + ".specular").c_str(), lightData.specular);
@@ -57,6 +60,16 @@ void Light::sendLightPositionDataUniform(std::shared_ptr<Shader> shader, const s
 {
 	shader->sendUniform3fv((uniformName + ".position").c_str(), lightData.position);
 
+}
+
+void Light::resetLightData()
+{
+	lightData = LightData{};
+}
+
+void Light::setLightDirection(glm::vec3 dir)
+{
+	lightData.direction = dir;
 }
 
 LightData Light::getLightData() { return lightData; }

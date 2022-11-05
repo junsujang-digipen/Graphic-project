@@ -93,16 +93,21 @@ void GAPP::Update()
 	}
 	sceneManager->Init();
 
+	bool engineLoop{true};
+
 	do
 	{
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) != 0) {
+			sceneManager->exit();
+			engineLoop = false;
+		}
 		sceneManager->Update(0.1);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
 	} 
-	while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS &&
-		glfwWindowShouldClose(window) == 0);
+	while (engineLoop);
 }
 
 void GAPP::APPOff()
