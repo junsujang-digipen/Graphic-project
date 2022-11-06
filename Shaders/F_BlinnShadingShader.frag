@@ -3,6 +3,7 @@ uniform vec3 cameraPos = vec3(0.,130.,150.);
 uniform float cameraNear = 0.1;
 uniform float cameraFar = 1000.;
 uniform vec3 fogCol = vec3(0.,0.,0.);
+uniform vec3 GAmbient= vec3(0.,0.,0.);
 
 in vec3 v_normal;
 in vec3 v_pos;
@@ -60,6 +61,7 @@ void main()
 		mdiffuse = vec3(0.5);
 		mspecular = vec3(0.5);
 	}
+	MatShininess = mspecular.r*mspecular.r;
 	material = Material(MatAmbient,mdiffuse,mspecular,MatShininess,MatEmissive);
 	vec3  n  = normalize(v_normal);
 	vec3 viewDir = normalize(cameraPos - v_pos);
@@ -99,15 +101,17 @@ void main()
 			float theta = (dot(normalize(-l), normalize(lightSources[i].direction))); 
     		float epsilon = (lightSources[i].innerCut - lightSources[i].outerCut);
     		float intensity = clamp((theta - lightSources[i].outerCut) / epsilon, 0.0, 1.0);
+			intensity = pow(intensity,lightSources[i].fallOff);
 			//ambient *= intensity;
 			diffuse  *= intensity;
     		specular *= intensity;
 		}
 
-		color +=  material.emissive + Att*(ambient + diffuse + specular);
+		color += Att*(ambient + diffuse + specular);
 	}
 	//color /= numCurLights;
 	//fog
+	color += material.emissive + GAmbient*material.ambient;
 	float fog = (cameraFar - length(cameraPos - v_pos) )/(cameraFar - cameraNear);
 
 	color = color*fog + (1-fog)*fogCol;

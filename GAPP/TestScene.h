@@ -27,7 +27,8 @@ class TestScene :public Scene {
 	std::shared_ptr<Entity> ObjPlane{};
 
 	std::vector<std::shared_ptr<Texture>> textures{};
-	glm::vec3 ObjAmbient{0.5f};
+	int OBJtextureMappingNum{0};
+	glm::vec3 ObjAmbient{0.1f};
 	glm::vec3 ObjEmissive{ 0.f };
 
 	int SpCurrNum{1};
@@ -38,7 +39,7 @@ class TestScene :public Scene {
 	int nowObj{ 0 };
 	float ObjRotate{0.f};
 
-	bool IsScenario3{false};
+	short nowScenario{0};
 
 public:
 	TestScene();

@@ -11,6 +11,7 @@ struct Light {
     //spot light == 2
     float innerCut;
     float outerCut;
+    float fallOff;
 
     vec3 ambient;
     vec3 diffuse;

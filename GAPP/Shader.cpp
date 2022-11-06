@@ -14,7 +14,7 @@ End Header --------------------------------------------------------*/
 #include <fstream>
 #include <sstream>
 
-Shader::Shader()
+Shader::Shader(std::string name):ShaderFileName(name)
 {
 	shdrProgram = glCreateProgram();
 }
@@ -62,6 +62,7 @@ GLuint Shader::compileShader(GLuint ShaderType, const std::vector<std::string> s
 		GLsizei log_length = 0;
 		GLchar message[1024];
 		glGetShaderInfoLog(shdr, 1024, &log_length, message);
+		std::cout << ShaderFileName << " error: " << std::endl;
 		std::cout << message << std::endl;
 		// Write the error to a log
 	}
@@ -86,6 +87,7 @@ void Shader::linkProgram()
 		GLsizei log_length = 0;
 		GLchar message[1024];
 		glGetProgramInfoLog(shdrProgram, 1024, &log_length, message);
+		std::cout << ShaderFileName << " error: " << std::endl;
 		std::cout << message << std::endl;
 		// Write the error to a log
 	}
@@ -98,6 +100,7 @@ void Shader::linkProgram()
 
 GLuint Shader::getHandle()
 {
+
 	return shdrProgram;
 }
 
@@ -111,6 +114,13 @@ void Shader::unuseProgram()
 	glUseProgram(0);
 }
 
+void Shader::initProgram()
+{
+	unuseProgram();
+	glDeleteProgram(shdrProgram);
+	shdrProgram = glCreateProgram();
+}
+
 void Shader::sendUniform1iv(const GLchar* name, const int& data)
 {
 	useProgram();
@@ -119,6 +129,7 @@ void Shader::sendUniform1iv(const GLchar* name, const int& data)
 		glUniform1iv(loc, 1, &data);
 	}
 	else {
+		std::cout << ShaderFileName << " error: " << std::endl;
 		std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
 	}
 	unuseProgram();
@@ -132,6 +143,7 @@ void Shader::sendUniform1fv(const GLchar* name, const float& data)
 		glUniform1fv(loc, 1, &data);
 	}
 	else {
+		std::cout << ShaderFileName << " error: " << std::endl;
 		std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
 	}
 	unuseProgram();
@@ -145,6 +157,8 @@ void Shader::sendUniform3fv(const GLchar* name, const glm::vec3& data)
 		glUniform3fv(loc, 1, &data.x);
 	}
 	else {
+		std::cout << ShaderFileName << " error: " << std::endl;
+
 		std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
 	}
 	unuseProgram();
@@ -158,6 +172,8 @@ void Shader::sendUniformMatrix4fv(const GLchar* name, const glm::mat4& data)
 		glUniformMatrix4fv(loc, 1, GL_FALSE, &data[0][0]);
 	}
 	else {
+		std::cout << ShaderFileName << " error: " << std::endl;
+
 		std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
 	}
 	unuseProgram();
@@ -171,6 +187,8 @@ void Shader::sendUniformMatrix3fv(const GLchar* name, const glm::mat3& data)
 		glUniformMatrix3fv(loc, 1, GL_FALSE, &data[0][0]);
 	}
 	else {
+		std::cout << ShaderFileName << " error: " << std::endl;
+
 		std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
 	}
 	unuseProgram();

@@ -19,11 +19,13 @@ typedef float GLfloat;
 class Shader {
 	GLuint shdrProgram{};
 	std::vector<GLuint> shdrs{};
+
+	std::string ShaderFileName{};
 public:
-	Shader();
+	Shader(std::string name);
 	~Shader();
 
-	const std::string getShaderSourceFromFile(const char* path);
+	//const std::string getShaderSourceFromFile(const char* path);
 
 	GLuint compileShader(GLuint ShaderType, const std::vector<std::string> source);
 	void attachShader(GLuint shdr);
@@ -32,6 +34,7 @@ public:
 	void useProgram();
 	void unuseProgram();
 
+	void initProgram();
 
 	void sendUniform1iv(const GLchar* name, const int& data);
 	void sendUniform1fv(const GLchar* name, const float& data);

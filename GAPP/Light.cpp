@@ -34,7 +34,7 @@ void Light::update(double dt)
 //
 void Light::draw()
 {
-	objShader->sendUniform3fv("OBJColor", lightData.ambient);
+	objShader->sendUniform3fv("OBJColor", lightData.diffuse);
 	Entity::draw();
 
 }
@@ -50,6 +50,7 @@ void Light::sendLightDataUniform(std::shared_ptr<Shader> shader, const std::stri
 	shader->sendUniform1fv((uniformName + ".quadratic").c_str(), lightData.quadratic);
 	shader->sendUniform1fv((uniformName + ".innerCut").c_str(), lightData.innerCut);
 	shader->sendUniform1fv((uniformName + ".outerCut").c_str(), lightData.outerCut);
+	shader->sendUniform1fv((uniformName + ".fallOff").c_str(), lightData.fallOff);
 	shader->sendUniform3fv((uniformName + ".ambient").c_str(), lightData.ambient);
 	shader->sendUniform3fv((uniformName + ".diffuse").c_str(), lightData.diffuse);
 	shader->sendUniform3fv((uniformName + ".specular").c_str(), lightData.specular);
