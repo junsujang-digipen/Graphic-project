@@ -5,7 +5,7 @@ File Name: OBJLoader.cpp
 Purpose: For load obj file
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 1 - Render an OBJ file
+Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/29/2022
 End Header --------------------------------------------------------*/
@@ -94,7 +94,10 @@ void OBJLoader::FileLoad(const char* path)
 			v -= center;
 			v = v / maxLength;
 		}
+		boundBoxMax = glm::vec3{ max - center } / maxLength;
+		boundBoxMin = glm::vec3{ min - center } / maxLength;
 		
+
 		//Compute normal
 		{
 			std::vector<std::vector<int>> forComputeSmoothNormal{};

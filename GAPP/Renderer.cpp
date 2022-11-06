@@ -5,7 +5,7 @@ File Name: Renderer.cpp
 Purpose: For setting buffers
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 1 - Render an OBJ file
+Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/29/2022
 End Header --------------------------------------------------------*/
@@ -33,6 +33,16 @@ void Renderer::PointBufferGlmVec3(GLuint vao, GLuint vbo,GLuint layerIndex)
 	glBindVertexArray(0);
 }
 
+void Renderer::PointBufferGlmVec2(GLuint vao, GLuint vbo, GLuint layerIndex)
+{
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	glEnableVertexAttribArray(layerIndex);
+	glVertexAttribPointer(layerIndex, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
 void Renderer::genBuffer(GLuint* vbo)
 {
 	glGenBuffers(1, vbo);
@@ -48,6 +58,12 @@ void Renderer::BufferData(unsigned bufferType, GLuint vbo, const std::vector<glm
 {
 	glBindBuffer(bufferType, vbo);
 	glBufferData(bufferType, sizeof(glm::vec3) * data.size(), data.data(), GL_STATIC_DRAW);
+	glBindBuffer(bufferType, 0);
+}
+void Renderer::BufferData(unsigned bufferType, GLuint vbo, const std::vector<glm::vec2>& data)
+{
+	glBindBuffer(bufferType, vbo);
+	glBufferData(bufferType, sizeof(glm::vec2) * data.size(), data.data(), GL_STATIC_DRAW);
 	glBindBuffer(bufferType, 0);
 }
 void Renderer::BufferData(unsigned bufferType, GLuint vbo, const std::vector<GLuint>& data)

@@ -5,7 +5,7 @@ File Name: TestScene.cpp
 Purpose: Scene for testing objs and loader and shaders
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 1 - Render an OBJ file 
+Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model 
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/27/2022
 End Header --------------------------------------------------------*/
@@ -28,6 +28,9 @@ glm::mat4 WTC{};
 
 TestScene::TestScene(): Scene(),SpCurrNum(1)
 {
+}
+TestScene::~TestScene() {
+	
 }
 
 void TestScene::Load()
@@ -68,8 +71,8 @@ void TestScene::Load()
 	LightShader = std::make_shared<Shader>("Light source Shader");
 	//Shader
 	{
-		GLuint vshdr = diffuseShader->compileShader(GL_VERTEX_SHADER, { shaderVersion, commonFunctionShdr, vBlinnShadingshdr });
-		GLuint fshdr = diffuseShader->compileShader(GL_FRAGMENT_SHADER, { shaderVersion, LightSturctShdr, MaterialStructShdr, commonFunctionShdr,fBlinnShadingshdr });
+		GLuint vshdr = diffuseShader->compileShader(GL_VERTEX_SHADER, { shaderVersion, commonFunctionShdr, vPhongShadingshdr });
+		GLuint fshdr = diffuseShader->compileShader(GL_FRAGMENT_SHADER, { shaderVersion, LightSturctShdr, MaterialStructShdr, commonFunctionShdr,fPhongShadingshdr });
 		diffuseShader->attachShader(vshdr);
 		diffuseShader->attachShader(fshdr);
 		diffuseShader->linkProgram();
@@ -146,7 +149,7 @@ void TestScene::Load()
 		ObjCircleLine->GetDataForOBJLoader(Temp);
 		ObjCircleLine->load();
 
-		ObjCircleLine->objShader = diffuseShader;
+		ObjCircleLine->objShader = LightShader;
 		ObjCircleLine->normalVectorShader = NormalShdrProgram;
 	}
 	//sphere
@@ -261,8 +264,8 @@ void TestScene::Update(double dt)
 				if (choosenNum == 0) {
 					const std::string vPhongLightingshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_PhongLightingShader.vert") };
 					const std::string fPhongLightingshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_PhongLightingShader.frag") };
-					GLuint vshdr = diffuseShader->compileShader(GL_VERTEX_SHADER, { shaderVersion, commonFunctionShdr, vPhongLightingshdr });
-					GLuint fshdr = diffuseShader->compileShader(GL_FRAGMENT_SHADER, { shaderVersion, LightSturctShdr, MaterialStructShdr, commonFunctionShdr,fPhongLightingshdr });
+					GLuint vshdr = diffuseShader->compileShader(GL_VERTEX_SHADER, { shaderVersion,LightSturctShdr, MaterialStructShdr, commonFunctionShdr, vPhongLightingshdr });
+					GLuint fshdr = diffuseShader->compileShader(GL_FRAGMENT_SHADER, { shaderVersion, commonFunctionShdr,fPhongLightingshdr });
 					diffuseShader->attachShader(vshdr);
 					diffuseShader->attachShader(fshdr);
 					diffuseShader->linkProgram();
@@ -295,7 +298,7 @@ void TestScene::Update(double dt)
 	{
 		if (ImGui::BeginMenu("Global control")) {
 			const float multConst{10000.f};
-			static glm::vec3 Attenuation{ 1.f*multConst,0.009f * multConst,0.0032f * multConst };
+			static glm::vec3 Attenuation{ 1.f*multConst,0.009f * multConst,0.001f * multConst };
 			ImGui::InputFloat3(std::string("Attenuation coefficients").c_str(), &Attenuation.r);
 			const glm::vec3 Att{ Attenuation / multConst };
 			for (int i = 0; i < SpMax; ++i) {
@@ -329,6 +332,11 @@ void TestScene::Update(double dt)
 			ImGui::SliderFloat3("Texture ambient", &ObjAmbient.x, 0.f, 1.f);
 			ImGui::SliderFloat3("Texture emissive", &ObjEmissive.x, 0.f, 1.f);
 
+			ImGui::Checkbox("GPU texture mapping", &IsGPUtextureMapping);
+			ImGui::Checkbox("Position Entity mapping", &IsPositionEntityMapping);
+			for (auto&o:Obj) {
+				o->IsPositionEntity = IsPositionEntityMapping;
+			}
 			static char* currItem{};
 			if (ImGui::BeginCombo("Texture mapping Choose", currItem) == true) {
 				bool one{ false };
@@ -345,15 +353,19 @@ void TestScene::Update(double dt)
 
 				if (one == true) {
 					OBJtextureMappingNum = 0;
+					Obj[nowObj]->calcSphereTexCoord();
 				}
 				if (two == true) {
 					OBJtextureMappingNum = 1;
+					Obj[nowObj]->calcCylindricalTexCoord();
 				}
 				if (three == true) {
 					OBJtextureMappingNum = 2;
+					Obj[nowObj]->calcPlanarTexCoord();
 				}
 				if (four == true) {
 					OBJtextureMappingNum = 3;
+					Obj[nowObj]->calcCubeMapTexCoord();
 				}
 				if (five == true) {
 					OBJtextureMappingNum = 4;
@@ -485,6 +497,10 @@ void TestScene::Draw()
 		diffuseShader->sendUniform1iv("texMappingType", OBJtextureMappingNum);
 		diffuseShader->sendUniform3fv("MatAmbient", ObjAmbient);
 		diffuseShader->sendUniform3fv("MatEmissive", ObjEmissive);
+		diffuseShader->sendUniform1iv("isGPUMapping", IsGPUtextureMapping);
+		diffuseShader->sendUniform1iv("isPositionEntity", IsPositionEntityMapping);
+		diffuseShader->sendUniform3fv("boundMax", Obj[nowObj]->boundBoxMax);
+		diffuseShader->sendUniform3fv("boundMin", Obj[nowObj]->boundBoxMin);
 		Obj[nowObj]->draw();
 		ObjCircleLine->draw();
 
@@ -510,9 +526,11 @@ void TestScene::Unload()
 	for (auto& o : Obj) {
 		o->unload();
 	}
+	Obj.clear();
 	for (auto& ObjSphere : ObjSpheres) {
 		ObjSphere->unload();
 	}
+	ObjSpheres.clear();
 	ObjCircleLine->unload();
 	ObjPlane->unload();
 	textures.clear();

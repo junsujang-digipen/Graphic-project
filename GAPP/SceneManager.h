@@ -5,7 +5,7 @@ File Name: SceneManager.h
 Purpose: For managing scenes
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 1 - Render an OBJ file
+Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/27/2022
 End Header --------------------------------------------------------*/

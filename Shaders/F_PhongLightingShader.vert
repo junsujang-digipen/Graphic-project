@@ -2,42 +2,147 @@
 layout(location = 0) in vec3 modelPosition;
 
 layout(location = 1) in vec3 a_normal;
+layout(location = 3) in vec2 uv;
 
 uniform mat4 modelToWorldMat;
 uniform mat4 WorldToCameraMat;
 uniform mat3 u_normalMatrix;
 
-uniform vec3 u_light = vec3(0., 100., 100.);
-uniform vec3 u_light_col = vec3(1., 1., 1.);
-uniform vec3 u_ambient = vec3(0.5);
-uniform vec3 u_materialCol = vec3(1.0, 1.0, 1.0);
-uniform vec3 cameraPos = vec3(0.,100.,100.);
-
 out vec3 out_color;
 
+uniform vec3 cameraPos = vec3(0.,130.,150.);
+uniform float cameraNear = 0.1;
+uniform float cameraFar = 1000.;
+uniform vec3 fogCol = vec3(0.,0.,0.);
+uniform vec3 GAmbient= vec3(0.,0.,0.);
+
+//lights
+#define MAX_LIGHT_NUMBERS 16 
+uniform Light lightSources[MAX_LIGHT_NUMBERS];
+uniform int numCurLights = 1;
+//
+
+uniform vec3 MatAmbient = vec3(0.5);
+uniform sampler2D MatDiffuse;
+uniform sampler2D MatSpecular;
+float MatShininess = 10.;
+uniform vec3 MatEmissive = vec3(0.);
+
+//tex
+uniform vec3 boundMax = vec3(1.);
+uniform vec3 boundMin = vec3(-1.);
+uniform int texMappingType = 0;
+uniform int isGPUMapping = 1;
+uniform int isPositionEntity = 1;
 
 void main()
 {
-	vec3 v_normal = u_normalMatrix * a_normal;
-	vec3 v_pos = vec3(modelToWorldMat*vec4(modelPosition,1));
+ 	vec2 UV;
+ 	vec3 v_normal;
+ 	vec3 v_pos;
+ 	vec3 a_pos;
+    vec3 model_normal;
+
+	UV = uv;
+	a_pos = modelPosition;
+	model_normal = a_normal;
+	v_normal = u_normalMatrix * a_normal;
+	v_pos = vec3(modelToWorldMat*vec4(modelPosition,1));
 	gl_Position.xyzw = WorldToCameraMat*modelToWorldMat*vec4(modelPosition,1);
 
-	float specularStrength = 0.5;
-	float shininess = 10.;
-	float ambientStrength = 0.1;
-
+	vec2 TexCoord = vec2(0.);
+	vec3 Entity = a_pos;
+	if(isPositionEntity == 0){
+		Entity = normalize(model_normal);
+	}
+	Material material;
+	vec3 mdiffuse = vec3(0.5);
+	vec3 mspecular = vec3(0.5);
+	const float maxColVal = 255.;
+	if(isGPUMapping == 1){
+		if(texMappingType == 0){
+			TexCoord = calcSphereTexCoord(Entity,boundMin,boundMax);
+			mdiffuse = texture(MatDiffuse, TexCoord).rgb;
+			mspecular = texture(MatSpecular, TexCoord).rgb;
+		}
+		else if(texMappingType == 1){
+			TexCoord = calcCylindricalTexCoord(Entity,boundMin,boundMax);
+			mdiffuse = texture(MatDiffuse, TexCoord).rgb;
+			mspecular = texture(MatSpecular, TexCoord).rgb;
+		}
+		else if(texMappingType == 2){
+			TexCoord = calcPlanarTexCoord(Entity,boundMin,boundMax);
+			mdiffuse = texture(MatDiffuse, TexCoord).rgb;
+			mspecular = texture(MatSpecular, TexCoord).rgb;
+		}
+		else if(texMappingType == 3){
+			TexCoord = calcCubeMapTexCoord(Entity,boundMin,boundMax);
+			mdiffuse = texture(MatDiffuse, TexCoord).rgb;
+			mspecular = texture(MatSpecular, TexCoord).rgb;
+		}
+		else {
+		}
+	}
+	else{
+		TexCoord = UV;
+		if(texMappingType < 4){
+			mdiffuse = texture(MatDiffuse, TexCoord).rgb;
+			mspecular = texture(MatSpecular, TexCoord).rgb;
+		}
+	}
+	MatShininess = mspecular.r*mspecular.r*maxColVal;
+	material = Material(MatAmbient,mdiffuse,mspecular,MatShininess,MatEmissive);
 	vec3  n  = normalize(v_normal);
-    vec3  l  = normalize(u_light - v_pos);
-    float nl = max(dot(n, l), 0.);
-
 	vec3 viewDir = normalize(cameraPos - v_pos);
-	vec3 reflectDir = computeReflect(l, n);  
-	float sf = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-	
-	vec3 diffuse = nl*u_light_col;
-	vec3 specular = specularStrength * sf * u_light_col;	
-    vec3 ambient = ambientStrength * u_ambient * u_light_col;
+	vec3 color = vec3(0);
 
-	vec3 color = (ambient + diffuse + specular) * u_materialCol;
-	out_color = color;
+	for(int i = 0;i<numCurLights;++i){
+		vec3 l;
+		if(lightSources[i].type == 0){
+			l = normalize(-lightSources[i].direction);
+		}else if(lightSources[i].type == 1){
+			l = normalize(lightSources[i].position - v_pos);
+		}else if(lightSources[i].type == 2){
+			l = normalize(lightSources[i].position - v_pos);
+		}
+		
+		float nl = max(dot(n, l), 0.);
+
+		vec3 reflectDir = computeReflect(l, n);  
+		float sf = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+		
+		vec3 ambient =  lightSources[i].ambient * material.ambient;
+		vec3 diffuse = lightSources[i].diffuse * material.diffuse * nl;
+		vec3 specular = lightSources[i].specular * material.specular * sf;	
+
+		//compute Att
+		float distLight = length(lightSources[i].position -v_pos);
+		float Att;
+		
+		if(lightSources[i].type == 0){
+			Att = 1.f;
+		}else{
+			Att = min(1.0f/(lightSources[i].constant + lightSources[i].linear*distLight + lightSources[i].quadratic*distLight*distLight),1.0);
+		}
+
+		//compute spot light
+		if(lightSources[i].type == 2){
+			float theta = (dot(normalize(-l), normalize(lightSources[i].direction))); 
+    		float epsilon = (lightSources[i].innerCut - lightSources[i].outerCut);
+    		float intensity = clamp((theta - lightSources[i].outerCut) / epsilon, 0.0, 1.0);
+			intensity = pow(intensity,lightSources[i].fallOff);
+			//ambient *= intensity;
+			diffuse  *= intensity;
+    		specular *= intensity;
+		}
+
+		color += Att*(ambient + diffuse + specular);
+	}
+	//color /= numCurLights;
+	//fog
+	color += material.emissive + GAmbient*material.ambient;
+	float fog = (cameraFar - length(cameraPos - v_pos) )/(cameraFar - cameraNear);
+
+	color = color*fog + (1-fog)*fogCol;
+	out_color = (color);
 }

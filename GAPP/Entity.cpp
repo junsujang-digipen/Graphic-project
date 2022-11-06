@@ -5,7 +5,7 @@ File Name: Entity.cpp
 Purpose: For storing Entity datas
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 1 - Render an OBJ file
+Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/30/2022
 End Header --------------------------------------------------------*/
@@ -54,7 +54,9 @@ void Entity::GetDataForOBJLoader(OBJLoader& objLoader)
 	VertexTextureDatas = objLoader.VertexTextureDatas;
 	idxDatas = objLoader.idxDatas;
 	primitive_type = objLoader.primitive_type;
-	
+	boundBoxMax = objLoader.boundBoxMax;
+	boundBoxMin = objLoader.boundBoxMin;
+
 	makeNormalDrawVec(objLoader.VertexDatas, objLoader.VertexNormalDatas, VertexNormalDrawVec,scale, 2.f);
 	if (objLoader.FaceNormalDatas.size() > 0)
 	{
@@ -84,6 +86,12 @@ void Entity::load()
 	//index
 	renderer.genBuffer(&ibo);
 	renderer.BufferData(GL_ELEMENT_ARRAY_BUFFER, ibo, idxDatas);
+	//UV
+	VertexUVDatas.resize(VertexDatas.size());
+	renderer.genBuffer(&uvbo);
+	renderer.BufferData(GL_ARRAY_BUFFER, uvbo, VertexUVDatas);
+	renderer.PointBufferGlmVec2(vao, uvbo, 3);
+
 }
 
 void Entity::unload()
@@ -94,6 +102,7 @@ void Entity::unload()
 	renderer.deleteBuffer(GL_ARRAY_BUFFER, &vno);
 	renderer.deleteBuffer(GL_ARRAY_BUFFER, &vboForLine);
 	renderer.deleteBuffer(GL_ELEMENT_ARRAY_BUFFER, &ibo);
+	renderer.deleteBuffer(GL_ARRAY_BUFFER, &uvbo);
 }
 
 void Entity::update(double /*dt*/)
@@ -135,4 +144,122 @@ void Entity::drawNormal(int num)
 		glDrawArrays(GL_LINES, 0, (GLsizei)(FaceNormalDrawVec.size()));
 	}
 	normalVectorShader->unuseProgram();
+}
+
+void Entity::calcSphereTexCoord()
+{
+	glm::vec3 center = (boundBoxMin + boundBoxMax) / 2.f;
+	for (int i = 0; i < VertexDatas.size();++i) {
+		glm::vec3 vpos{};
+		if (IsPositionEntity == true) {
+			vpos = VertexDatas[i];
+		}
+		else {
+			vpos = VertexNormalDatas[i];
+		}
+		glm::vec3 alignedPoint = vpos - center;
+		float theta = atan(alignedPoint.z/alignedPoint.x);
+		float alignedMiny = boundBoxMin.y - center.y;
+		float alignedMaxy = boundBoxMax.y - center.y;
+		float y = (alignedPoint.y - alignedMiny) / (alignedMaxy - alignedMiny);
+		VertexUVDatas[i] = { theta / 6.14f, y };
+	}
+	Renderer renderer{};
+	renderer.BufferData(GL_ARRAY_BUFFER, uvbo, VertexUVDatas);
+}
+
+void Entity::calcCylindricalTexCoord()
+{
+	glm::vec3 center = (boundBoxMin + boundBoxMax) / 2.f;
+	for (int i = 0; i < VertexDatas.size(); ++i) {
+		glm::vec3 vpos{};
+		if (IsPositionEntity == true) {
+			vpos = VertexDatas[i];
+		}
+		else {
+			vpos = VertexNormalDatas[i];
+		}
+		glm::vec3 alignedPoint = vpos - center;
+		float theta = atan(alignedPoint.z / alignedPoint.x);
+		float r = sqrt(alignedPoint.x * alignedPoint.x + alignedPoint.y * alignedPoint.y + alignedPoint.z * alignedPoint.z);
+		float latitude = acos(alignedPoint.y / r);
+		VertexUVDatas[i] = glm::vec2(theta / 6.14f, 3.14f - latitude / 3.14f);
+	}
+	Renderer renderer{};
+	renderer.BufferData(GL_ARRAY_BUFFER, uvbo, VertexUVDatas);
+}
+
+void Entity::calcPlanarTexCoord()
+{
+	glm::vec3 center = (boundBoxMin + boundBoxMax) / 2.f;
+	glm::vec3 alignedPointMin = boundBoxMin - center;
+	glm::vec3 alignedPointMax = boundBoxMax - center;
+	for (int i = 0; i < VertexDatas.size(); ++i) {
+		glm::vec3 vpos{};
+		if (IsPositionEntity == true) {
+			vpos = VertexDatas[i];
+		}
+		else {
+			vpos = VertexNormalDatas[i];
+		}
+		glm::vec3 alignedPoint = vpos - center;
+		VertexUVDatas[i] = (alignedPoint - alignedPointMin) / (alignedPointMax - alignedPointMin);
+	}
+	Renderer renderer{};
+	renderer.BufferData(GL_ARRAY_BUFFER, uvbo, VertexUVDatas);
+}
+
+void Entity::calcCubeMapTexCoord()
+{
+	glm::vec3 center = (boundBoxMin + boundBoxMax) / 2.f;
+	for (int i = 0; i < VertexDatas.size(); ++i) {
+		glm::vec3 vpos{};
+		if (IsPositionEntity == true) {
+			vpos = VertexDatas[i];
+		}
+		else {
+			vpos = VertexNormalDatas[i];
+		}
+		glm::vec3 alignedPoint = vpos - center;
+		glm::vec3 absAlignedP = abs(alignedPoint);
+		bool isXPositive = alignedPoint.x >= 0;
+		bool isYPositive = alignedPoint.y >= 0;
+		bool isZPositive = alignedPoint.z >= 0;
+
+		glm::vec2 uv{};
+		if (absAlignedP.x >= absAlignedP.y && absAlignedP.x >= absAlignedP.z) {
+			if (isXPositive == true) {
+				uv.x = -absAlignedP.z / absAlignedP.x;
+				uv.y = absAlignedP.y / absAlignedP.x;
+			}
+			else {
+				uv.x = absAlignedP.z / absAlignedP.x;
+				uv.y = absAlignedP.y / absAlignedP.x;
+			}
+		}
+		else if (absAlignedP.y >= absAlignedP.x && absAlignedP.y >= absAlignedP.z) {
+			if (isYPositive == true) {
+				uv.x = absAlignedP.x / absAlignedP.y;
+				uv.y = -absAlignedP.z / absAlignedP.y;
+			}
+			else {
+				uv.x = absAlignedP.x / absAlignedP.y;
+				uv.y = absAlignedP.z / absAlignedP.y;
+			}
+		}
+		else if (absAlignedP.z >= absAlignedP.y && absAlignedP.z >= absAlignedP.x) {
+			if (isZPositive == true) {
+				uv.x = absAlignedP.x / absAlignedP.z;
+				uv.y = absAlignedP.y / absAlignedP.z;
+			}
+			else {
+				uv.x = -absAlignedP.x / absAlignedP.z;
+				uv.y = absAlignedP.y / absAlignedP.z;
+			}
+		}
+
+		VertexUVDatas[i] = (uv - glm::vec2(1.)) * 0.5f;
+	}
+	Renderer renderer{};
+	renderer.BufferData(GL_ARRAY_BUFFER, uvbo, VertexUVDatas);
 }

@@ -5,7 +5,7 @@ File Name: OBJLoader.h
 Purpose: For load obj file
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 1 - Render an OBJ file
+Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/29/2022
 End Header --------------------------------------------------------*/
@@ -22,6 +22,9 @@ public:
 	std::vector<GLuint> idxDatas{};
 	unsigned int primitive_type{ GL_TRIANGLES };
 	unsigned int primitive_cnt{};
+
+	glm::vec3 boundBoxMax{};
+	glm::vec3 boundBoxMin{};
 
 	OBJLoader() = default;
 	void FileLoad(const char* path);

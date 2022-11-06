@@ -19,7 +19,7 @@ struct LightData {
     glm::vec3 position{0.f,0.f,0.f};
     float constant{1.f,};
     float linear{0.009f};
-    float quadratic{ 0.0032f };
+    float quadratic{ 0.001f };
     //spot light == 2
     float innerCut{0.6f};
     float outerCut{ 0.5f};

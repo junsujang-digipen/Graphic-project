@@ -5,9 +5,11 @@ uniform float cameraFar = 1000.;
 uniform vec3 fogCol = vec3(0.,0.,0.);
 uniform vec3 GAmbient= vec3(0.,0.,0.);
 
+in vec2 UV;
 in vec3 v_normal;
 in vec3 v_pos;
 in vec3 a_pos;
+in vec3 model_normal;
 out vec4 col;
 
 //lights
@@ -26,42 +28,55 @@ uniform vec3 MatEmissive = vec3(0.);
 uniform vec3 boundMax = vec3(1.);
 uniform vec3 boundMin = vec3(-1.);
 uniform int texMappingType = 0;
+uniform int isGPUMapping = 1;
+uniform int isPositionEntity = 1;
+
 
 void main()
 {
 	//texture(MatDiffuse, TexCoord).rgb
 	//texture(MatSpecular, TexCoord).rgb
-	vec2 TexCoord;
+	vec2 TexCoord = vec2(0.);
+	vec3 Entity = a_pos;
+	if(isPositionEntity == 0){
+		Entity = normalize(model_normal);
+	}
 	Material material;
-	vec3 mdiffuse;
-	vec3 mspecular;
+	vec3 mdiffuse = vec3(0.5);
+	vec3 mspecular = vec3(0.5);
 	const float maxColVal = 255.;
-	if(texMappingType == 0){
-		TexCoord = calcSphereTexCoord(a_pos,boundMin,boundMax);
-		mdiffuse = texture(MatDiffuse, TexCoord).rgb;
-		mspecular = texture(MatSpecular, TexCoord).rgb;
+	if(isGPUMapping == 1){
+		if(texMappingType == 0){
+			TexCoord = calcSphereTexCoord(Entity,boundMin,boundMax);
+			mdiffuse = texture(MatDiffuse, TexCoord).rgb;
+			mspecular = texture(MatSpecular, TexCoord).rgb;
+		}
+		else if(texMappingType == 1){
+			TexCoord = calcCylindricalTexCoord(Entity,boundMin,boundMax);
+			mdiffuse = texture(MatDiffuse, TexCoord).rgb;
+			mspecular = texture(MatSpecular, TexCoord).rgb;
+		}
+		else if(texMappingType == 2){
+			TexCoord = calcPlanarTexCoord(Entity,boundMin,boundMax);
+			mdiffuse = texture(MatDiffuse, TexCoord).rgb;
+			mspecular = texture(MatSpecular, TexCoord).rgb;
+		}
+		else if(texMappingType == 3){
+			TexCoord = calcCubeMapTexCoord(Entity,boundMin,boundMax);
+			mdiffuse = texture(MatDiffuse, TexCoord).rgb;
+			mspecular = texture(MatSpecular, TexCoord).rgb;
+		}
+		else {
+		}
 	}
-	else if(texMappingType == 1){
-		TexCoord = calcCylindricalTexCoord(a_pos,boundMin,boundMax);
-		mdiffuse = texture(MatDiffuse, TexCoord).rgb;
-		mspecular = texture(MatSpecular, TexCoord).rgb;
+	else{
+		TexCoord = UV;
+		if(texMappingType < 4){
+			mdiffuse = texture(MatDiffuse, TexCoord).rgb;
+			mspecular = texture(MatSpecular, TexCoord).rgb;
+		}
 	}
-	else if(texMappingType == 2){
-		TexCoord = calcPlanarTexCoord(a_pos,boundMin,boundMax);
-		mdiffuse = texture(MatDiffuse, TexCoord).rgb;
-		mspecular = texture(MatSpecular, TexCoord).rgb;
-	}
-	else if(texMappingType == 3){
-		TexCoord = calcCubeMapTexCoord(a_pos,boundMin,boundMax);
-		mdiffuse = texture(MatDiffuse, TexCoord).rgb;
-		mspecular = texture(MatSpecular, TexCoord).rgb;
-	}
-	else {
-		TexCoord = vec2(0.);
-		mdiffuse = vec3(0.5);
-		mspecular = vec3(0.5);
-	}
-	MatShininess = mspecular.r*mspecular.r;
+	MatShininess = mspecular.r*mspecular.r*maxColVal;
 	material = Material(MatAmbient,mdiffuse,mspecular,MatShininess,MatEmissive);
 	vec3  n  = normalize(v_normal);
 	vec3 viewDir = normalize(cameraPos - v_pos);

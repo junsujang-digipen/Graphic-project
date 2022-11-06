@@ -5,7 +5,7 @@ File Name: Entity.h
 Purpose: For storing Entity datas
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 1 - Render an OBJ file
+Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/30/2022
 End Header --------------------------------------------------------*/
@@ -30,10 +30,15 @@ class Entity {
 	std::vector<glm::vec3> FaceNormalDrawVec{};
 	unsigned int primitive_type{ GL_TRIANGLES };
 
-	GLuint vao{}, vboForLine{}, vbo{}, vno{}, ibo{};
+	std::vector<glm::vec2> VertexUVDatas{};
+
+	GLuint vao{}, vboForLine{}, vbo{}, vno{}, ibo{},uvbo;
 public:
 	std::shared_ptr<Shader> objShader{};
 	std::shared_ptr<Shader> normalVectorShader{};
+
+	glm::vec3 boundBoxMax{ 1.f };
+	glm::vec3 boundBoxMin{ -1.f };
 
 	glm::vec3 pos{};
 	glm::vec3 scale{1.};
@@ -51,4 +56,10 @@ public:
 	virtual void update(double dt);
 	virtual void draw();
 	virtual void drawNormal(int num);
+
+	bool IsPositionEntity{true};
+	void calcSphereTexCoord();
+	void calcCylindricalTexCoord();
+	void calcPlanarTexCoord();
+	void calcCubeMapTexCoord();
 };
