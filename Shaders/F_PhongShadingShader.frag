@@ -61,7 +61,7 @@ void main()
 		mdiffuse = vec3(0.5);
 		mspecular = vec3(0.5);
 	}
-	MatShininess = mspecular.r*mspecular.r;
+	MatShininess = mspecular.r*mspecular.r*maxColVal;
 	material = Material(MatAmbient,mdiffuse,mspecular,MatShininess,MatEmissive);
 	vec3  n  = normalize(v_normal);
 	vec3 viewDir = normalize(cameraPos - v_pos);
@@ -79,7 +79,7 @@ void main()
 		
 		float nl = max(dot(n, l), 0.);
 
-		vec3 reflectDir = computeReflect(viewDir, l);  
+		vec3 reflectDir = computeReflect(l, n);  
 		float sf = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 		
 		vec3 ambient =  lightSources[i].ambient * material.ambient;

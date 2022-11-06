@@ -25,8 +25,8 @@ class Camera {
 
 	bool matrixUpdate{ true };
 	float fov{ 0.33f * 3.14f };
-	float height{600};
-	float width{800};
+	float height{800.f};
+	float width{ 1200.f };
 	float ar{ width / height };
 	float near{ 0.1f };
 	float far{ 1000.f };
