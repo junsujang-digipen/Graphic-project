@@ -5,7 +5,7 @@ File Name: TestScene.cpp
 Purpose: Scene for testing objs and loader and shaders
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model 
+Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping 
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/27/2022
 End Header --------------------------------------------------------*/
@@ -17,14 +17,11 @@ End Header --------------------------------------------------------*/
 #include "Camera.h"
 #include "Shader.h"
 #include "Renderer.h"
-#include "Entity.h"
+#include "BasicObject.h"
 #include "Light.h"
 #include <stb_image.h>
 #include "Texture.h"
-#include <random>
-
-Camera camera{};
-glm::mat4 WTC{};
+#include "Random.h"
 
 TestScene::TestScene(): Scene(),SpCurrNum(1)
 {
@@ -35,6 +32,7 @@ TestScene::~TestScene() {
 
 void TestScene::Load()
 {
+	Camera camera{};
 	camera.init();
 	camera.setPosition({ 0,130,150 });
 	camera.setRotate({ glm::radians(-45.f),glm::radians(/*36.f*/0.f),0.f });
@@ -107,7 +105,7 @@ void TestScene::Load()
 		for (int i = 0; i < 5;++i) {
 			OBJLoader objLoader{};
 			objLoader.FileLoad(filepaths[i]);
-			Obj.push_back(std::make_shared<Entity>());
+			Obj.push_back(std::make_shared<BasicObject>());
 			Obj[i]->setScale(glm::vec3(50.f));
 			Obj[i]->GetDataForOBJLoader(objLoader);
 			Obj[i]->load();
@@ -127,7 +125,7 @@ void TestScene::Load()
 	}
 	//plane
 	{
-		ObjPlane = std::make_shared<Entity>();
+		ObjPlane = std::make_shared<BasicObject>();
 		OBJLoader Temp{};
 		Temp.FileLoad("cube2.obj");
 		ObjPlane->setPos(glm::vec3(0.f, -75.f, 0.f));
@@ -140,7 +138,7 @@ void TestScene::Load()
 	}
 	//Orbit
 	{
-		ObjCircleLine = std::make_shared<Entity>();
+		ObjCircleLine = std::make_shared<BasicObject>();
 		OBJLoader Temp{};
 		MakeCircleLineData(100, Temp.VertexDatas, Temp.VertexNormalDatas, Temp.FaceNormalDatas, Temp.idxDatas);
 		Temp.primitive_type = GL_LINES;
@@ -173,18 +171,6 @@ void TestScene::Load()
 			
 		}
 	}
-}
-
-
-double RanGenerator(double min, double max)
-{
-	static int Seed{10};
-	static std::knuth_b knuthrand(Seed);
-	std::uniform_real_distribution<double> distribution(min, max);
-	return distribution(knuthrand);
-}
-float random(double min = 0.0, double max = 1.0) {
-	return (float)RanGenerator(min,max);
 }
 
 

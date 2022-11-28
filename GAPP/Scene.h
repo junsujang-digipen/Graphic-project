@@ -5,18 +5,22 @@ File Name: Scene.h
 Purpose: Base of scenes
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
+Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/27/2022
 End Header --------------------------------------------------------*/
 #pragma once
 
 class GAPP;
+class ShaderManager;
+class TextureManager;
 class Scene {
-
+protected:
+	ShaderManager* shaderManager{};
+	TextureManager* textureManager{};
 public:
-	Scene() = default;
-	virtual ~Scene() = default;
+	Scene();
+	virtual ~Scene();
 	virtual void Load() = 0;
 	virtual void Update(double dt) = 0;
 	//virtual void ImGUIUpdate() = 0;

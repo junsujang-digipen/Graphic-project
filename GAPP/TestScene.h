@@ -5,7 +5,7 @@ File Name: TestScene.h
 Purpose: Scene for testing objs and loader and shaders
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
+Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/27/2022
 End Header --------------------------------------------------------*/
@@ -18,6 +18,9 @@ class Shader;
 class Entity;
 class Texture;
 class TestScene :public Scene {
+
+	glm::mat4 WTC{};
+
 	std::shared_ptr<Shader> diffuseShader{};
 	std::shared_ptr<Shader> NormalShdrProgram{};
 	std::shared_ptr<Shader> LightShader{};

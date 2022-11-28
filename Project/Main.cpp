@@ -5,12 +5,13 @@ File Name: Main.cpp
 Purpose: Main cpp file
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
+Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/26/2022
 End Header --------------------------------------------------------*/
 #include "GAPP.h"
 #include "TestScene.h"
+#include "TestScene2.h"
 
 int main() {
 	GAPP app{};
@@ -18,7 +19,8 @@ int main() {
 
 
 	TestScene ttscene{};
-	app.SetScene(0,ttscene);
+	TestScene2 ttscene2{};
+	app.SetScene(0, ttscene2);
 	app.SetNextScene(0);
 
 	app.Update();

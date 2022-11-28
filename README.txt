@@ -4,6 +4,8 @@ DigiPen Id
 - junsu.jang
 
 How to use parts of your user interface that is NOT specified in the assignment description.
+- Collapsed headers include the topics control
+- In Obj control header, there are reflect and refract controls exist
 - Slider 'Normal': 0 means not show normal vector, 1 means show vertex normal vector, 2 means show face normal vector, 3 means show both normal vector.
 - Slider 'OBJ Number': 0 means show 4Sphere, 1 means show bunny_high_poly, 2 means show cube2, 3 means show sphere, 4 means show sphere_modified
 - Slider 'OBJ rotate': means rotating loaded obj
@@ -22,32 +24,21 @@ Which part of the assignment has NOT been completed (not done, not working, etc.
 - Nothing
 
 Where the relevant source codes (both C++ and shaders) for the assignment are located. Specify the file path (folder name), file name, function name (or line number).
-- Shaders: Phong Lighting
+- Sky box rendering
+	- Folder name: GAPP
+	- File name: SkyBox.h, .cpp
 	- Folder name: Shaders
-	- File name: FF_CommonFunctions.glsl, FS_LightStruct.glsl, FS_MaterialStruct.glsl, F_PhongLightingShader.vert, F_PhongLightingShader.frag
-- Shaders: Phong Shading
+	- File name: FF_CommonFunctions.glsl (line 91), F_SkyBoxShader.frag
+- Scene setup & Environment Map generation
+	- Folder name: GAPP
+	- File name: TestScene2.cpp (line 107,497)
+	- File name: RenderTextureCamera.h, .cpp
+- Environment Map application in shaders
 	- Folder name: Shaders
-	- File name: FF_CommonFunctions.glsl, FS_LightStruct.glsl, FS_MaterialStruct.glsl, F_PhongShadingShader.vert, F_PhongShadingShader.frag
-- Shaders: Blinn Shading
-	- Folder name: Shaders
-	- File name: FF_CommonFunctions.glsl, FS_LightStruct.glsl, FS_MaterialStruct.glsl, F_BlinnShadingShader.vert, F_BlinnShadingShader.frag
-- Scene & Light setup
+	- File name: F_PhongShadingReflectShader.frag (line 151)
+- User Interactivity – Rendering
 	- Folder name: GAPP
-	- File name: TestScene.cpp
-	- line number: 156, 204, 235, 386
-- Material setup
-	- Folder name: GAPP
-	- File name: TestScene.cpp
-	- line number: 119, 329
-	- And mapping functions in FF_CommonFunctions.glsl
-- Light properties
-	- Folder name: GAPP
-	- File name: TestScene.cpp
-	- line number: 299, 386
-- GUI Functionality
-	- Folder name: GAPP
-	- File name: TestScene.cpp
-	- Function name: void TestScene::Update(double dt) 
+	- File name: TestScene2.cpp (line 366) 
 
 Which machine did you test your application on.
 - Indivisual laptop. 
@@ -56,7 +47,7 @@ If remote – specify OS, GPU, and OpenGL Driver version.
 - Windows 10, GTX 1660 Ti, 4.6
 
 The average number of hours you spent on the assignment, on a weekly basis
-- about 4 hours per a week.
+- about 8 hours per a week.
 
 Any other useful information pertaining to the application 
 - Nothing

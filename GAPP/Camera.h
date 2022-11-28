@@ -5,7 +5,7 @@ File Name: Camera.h
 Purpose: Camera matrix functions
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
+Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/28/2022
 End Header --------------------------------------------------------*/
@@ -36,7 +36,9 @@ class Camera {
 	glm::dvec3 prevMousePos{};
 	glm::dvec3 curMousePos{};
 
-	void arUpdate();
+	glm::vec3 CameraAngle{};
+
+	void WHUpdate();
 	void matrixUpdateFunc();
 	void cameraMoveFunc(double dt);
 
@@ -52,10 +54,11 @@ public:
 	const glm::mat4 getWorldToCamera()const { return worldToCamera; }
 	const glm::mat4 getCameraToNDC()const { return cameraToNDC; }
 	const glm::mat4 getCameraToWorld()const { return cameraToWorld; }
-	void setCameraHeight(float hei) { height = hei; }
-	void updateCameraHeight(float AH) { height += AH; }
+	//void setCameraHeight(float hei) { height = hei; }
+	//void updateCameraHeight(float AH) { height += AH; }
 	void resetAngle();
 	void setisMove(bool TF) { isMove = TF; }
+
 	const float getCameraWidth()const { return width; }
 	const float getCameraHeight()const { return height; }
 	float& getNear() { return near; }
@@ -65,6 +68,7 @@ public:
 	float getheight() { return height; }
 	float getFarWidth() { return width / distance * far; }
 	glm::vec3 getViewDirec() { return backDirection * -1.f; }
+	glm::vec3 getAngle();
 
 	void setDistance(float dist) { distance = dist; matrixUpdate = true; }
 	void setNear(float Near) { near = Near; matrixUpdate = true; }
@@ -73,6 +77,10 @@ public:
 	void setAr(float Ar) { ar = Ar; matrixUpdate = true; }
 	void setIsUpdate(bool TF) { matrixUpdate = TF; };
 	void setRotate(glm::vec3 angle);
+	void updateRotate(glm::vec3 angle);
 	void setSpeed(float sp) { speed = sp; }
+
+	void setLookAt(glm::vec3 lookAt);
+	void setLookAt(glm::vec3 lookAtVec, glm::vec3 rightVec, glm::vec3 upVec);
 };
 glm::mat3 rotationMat(glm::vec3 axis, float angle);

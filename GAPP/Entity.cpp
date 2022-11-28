@@ -5,7 +5,7 @@ File Name: Entity.cpp
 Purpose: For storing Entity datas
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
+Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/30/2022
 End Header --------------------------------------------------------*/
@@ -115,8 +115,6 @@ void Entity::update(double /*dt*/)
 
 void Entity::draw()
 {
-	glm::mat3 u_normal = glm::transpose(glm::inverse(objectMatrix));
-	objShader->sendUniformMatrix3fv("u_normalMatrix", u_normal);
 	objShader->sendUniformMatrix4fv("modelToWorldMat", objectMatrix);
 
 	objShader->useProgram();

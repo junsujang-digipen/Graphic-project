@@ -5,7 +5,7 @@ File Name: Camera.cpp
 Purpose: Camera matrix functions
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
+Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/28/2022
 End Header --------------------------------------------------------*/
@@ -23,7 +23,7 @@ void Camera::init()
 }
 
 void Camera::Update(double dt) {
-	arUpdate();
+	WHUpdate();
 
 	cameraMoveFunc(dt);
 	
@@ -37,33 +37,59 @@ void Camera::resetAngle()
 	backDirection = { 0,0,1 };
 }
 
+glm::vec3 Camera::getAngle()
+{
+	return CameraAngle;
+}
+
 void Camera::setRotate(glm::vec3 angle)
 {
+	CameraAngle = angle;
 	glm::mat3 XRotMat{ rotationMat(glm::vec3{1,0,0},angle.x) };
-	glm::mat3 YRotMat{ rotationMat(glm::vec3{0,1,0},angle.y) };
+	glm::mat3 YRotMat{ rotationMat(glm::vec3{0,-1,0},angle.y) };
 	glm::mat3 ZRotMat{ rotationMat(glm::vec3{0,0,1},angle.z) };
+
 	backDirection = glm::normalize((XRotMat * YRotMat * ZRotMat) * glm::vec3{ 0,0,1 });
 	rightDirection = glm::normalize(glm::cross(glm::vec3{ 0,1,0 }, backDirection));
 	upDirection = glm::normalize(glm::cross(backDirection, rightDirection));
 	matrixUpdate = true;
 }
 
-void Camera::arUpdate() {
-	//int w{};
-	//int h{};
-	//glfwGetWindowSize(GraphicEngine::GetWindowPtr(), &w, &h);
-	//glm::vec2 winSize = { w,h };
-	//ar = width / height;
-	//if (ar != winSize.x / winSize.y) {
-	//	ar = winSize.x / winSize.y;
-	//	//width = tan(fov / 2) * 2 * distance;
-	//	//height = width / ar;
+void Camera::updateRotate(glm::vec3 angle)
+{
+	CameraAngle = CameraAngle +  angle;
+	glm::mat3 XRotMat{ rotationMat(glm::vec3{1,0,0},angle.x) };
+	glm::mat3 YRotMat{ rotationMat(glm::vec3{0,-1,0},angle.y) };
+	glm::mat3 ZRotMat{ rotationMat(glm::vec3{0,0,1},angle.z) };
 
-	//	const float prevHeight = width / ar;
-	//	width = ar * height;
-	//	matrixUpdate = true;
-	//	distance = (near + far) / 2.f;
-	//}
+	backDirection = glm::normalize((XRotMat)*backDirection);
+	upDirection = glm::normalize(glm::cross(backDirection, rightDirection));
+
+	backDirection = glm::normalize((YRotMat)*backDirection);
+	rightDirection = glm::normalize(glm::cross(upDirection, backDirection));
+
+	rightDirection = glm::normalize((ZRotMat)*rightDirection);
+	upDirection = glm::normalize(glm::cross(backDirection, rightDirection));
+
+
+	matrixUpdate = true;
+}
+
+void Camera::setLookAt(glm::vec3 /*lookAt*/)
+{
+}
+
+void Camera::setLookAt(glm::vec3 lookAtVec, glm::vec3 rightVec, glm::vec3 upVec)
+{
+	backDirection = glm::normalize(-lookAtVec);
+	rightDirection = glm::normalize(rightVec);
+	upDirection = glm::normalize(upVec);
+}
+
+void Camera::WHUpdate() {
+
+	height = tan(fov/2.f) * 2.f * distance;
+	width = ar * height;
 }
 
 void Camera::matrixUpdateFunc()

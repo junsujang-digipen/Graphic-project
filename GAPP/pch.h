@@ -5,7 +5,7 @@ File Name: pch.h
 Purpose: IDK
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 2 - Implementing Phong Illumination Model
+Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/26/2022
 End Header --------------------------------------------------------*/
