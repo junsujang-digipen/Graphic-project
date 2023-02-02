@@ -23,13 +23,18 @@ End Header --------------------------------------------------------*/
 #include "BasicObject.h"
 #include "SkyBox.h"
 #include "Light.h"
-#include <stb_image.h>
+#include <lib/include/stb_image.h>//??
 
 #include "TextureManager.h"
 #include "Texture.h"
 
 #include "Random.h"
 #include "RenderTextureCamera.h"
+
+
+#include <lib/include/GL/glew.h>
+#include <lib/include/GLFW/glfw3.h>
+
 
 TestScene2::TestScene2() : Scene(), SpCurrNum(1)
 {
@@ -116,8 +121,8 @@ void TestScene2::Load()
 	LightShader = shaderManager->makeShader("Light source Shader");
 	//Shader
 	{
-		GLuint vshdr = diffuseShader->compileShader(GL_VERTEX_SHADER, { shaderVersion, commonFunctionShdr, vPhongReflectshdr });
-		GLuint fshdr = diffuseShader->compileShader(GL_FRAGMENT_SHADER, { shaderVersion, LightSturctShdr, MaterialStructShdr, commonFunctionShdr,fPhongReflectshdr });
+		GLuint vshdr = diffuseShader->compileShader(ShaderType::VERTEX_SHADER, { shaderVersion, commonFunctionShdr, vPhongReflectshdr });
+		GLuint fshdr = diffuseShader->compileShader(ShaderType::FRAGMENT_SHADER, { shaderVersion, LightSturctShdr, MaterialStructShdr, commonFunctionShdr,fPhongReflectshdr });
 		diffuseShader->attachShader(vshdr);
 		diffuseShader->attachShader(fshdr);
 		diffuseShader->linkProgram();
@@ -136,8 +141,8 @@ void TestScene2::Load()
 	}
 	//shader normal
 	{
-		GLuint vshdr = NormalShdrProgram->compileShader(GL_VERTEX_SHADER, { VshdrNormal });
-		GLuint fshdr = NormalShdrProgram->compileShader(GL_FRAGMENT_SHADER, { FshdrNormal });
+		GLuint vshdr = NormalShdrProgram->compileShader(ShaderType::VERTEX_SHADER, { VshdrNormal });
+		GLuint fshdr = NormalShdrProgram->compileShader(ShaderType::FRAGMENT_SHADER, { FshdrNormal });
 		NormalShdrProgram->attachShader(vshdr);
 		NormalShdrProgram->attachShader(fshdr);
 		NormalShdrProgram->linkProgram();
@@ -145,8 +150,8 @@ void TestScene2::Load()
 	}
 	//light shader 
 	{
-		GLuint vshdr = LightShader->compileShader(GL_VERTEX_SHADER, { shaderVersion, vLightshdr });
-		GLuint fshdr = LightShader->compileShader(GL_FRAGMENT_SHADER, { shaderVersion,fLightshdr });
+		GLuint vshdr = LightShader->compileShader(ShaderType::VERTEX_SHADER, { shaderVersion, vLightshdr });
+		GLuint fshdr = LightShader->compileShader(ShaderType::FRAGMENT_SHADER, { shaderVersion,fLightshdr });
 		LightShader->attachShader(vshdr);
 		LightShader->attachShader(fshdr);
 		LightShader->linkProgram();

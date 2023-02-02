@@ -11,6 +11,7 @@ Creation date: 11/04/2022
 End Header --------------------------------------------------------*/
 #pragma once
 #include <string>
+#include "Declare.h"
 
 //will be component
 class Shader;

@@ -13,6 +13,8 @@ End Header --------------------------------------------------------*/
 #include "Shader.h"
 #include <fstream>
 #include <sstream>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 Shader::Shader(std::string name):ShaderFileName(name)
 {
@@ -38,6 +40,21 @@ const std::string ShaderHelper::getShaderSourceFromFile(const char* path)
 	file.close();
 	std::cout << "Close file" << std::endl;
 	return readString.str();
+}
+
+GLuint Shader::compileShader(ShaderType shaderType, const std::vector<std::string> source)
+{
+	GLuint reValue{};
+	switch (shaderType)
+	{
+	case ShaderType::VERTEX_SHADER:
+		reValue = compileShader(GL_VERTEX_SHADER,source);
+	case ShaderType::FRAGMENT_SHADER:
+		reValue = compileShader(GL_FRAGMENT_SHADER,source);
+	default:
+		break;
+	}
+	return reValue;
 }
 
 GLuint Shader::compileShader(GLuint ShaderType, const std::vector<std::string> source)

@@ -11,6 +11,7 @@ Creation date: 09/29/2022
 End Header --------------------------------------------------------*/
 #pragma once
 #include "glm/glm.hpp"
+#include "Declare.h"
 
 class OBJLoader{
 public:

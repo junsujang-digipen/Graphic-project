@@ -11,6 +11,7 @@ Creation date: 11/26/2022
 End Header --------------------------------------------------------*/
 #pragma once
 #include "Camera.h"
+
 class TextureManager;
 class ShaderManager;
 class RenderTextureCamera:public Camera {

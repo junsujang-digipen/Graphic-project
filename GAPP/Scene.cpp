@@ -13,6 +13,16 @@ End Header --------------------------------------------------------*/
 #include "Scene.h"
 #include "ShaderManager.h"
 #include "TextureManager.h"
+#include "Entity.h"
+
+Entity* Scene::makeEntity()
+{
+	ID temp = entityContainer.create();
+
+	Entity tempEntity = entityContainer.emplace<Entity>(temp,this,temp);
+
+	return &tempEntity;
+}
 
 Scene::Scene()
 {
@@ -24,4 +34,9 @@ Scene::~Scene()
 {
 	delete shaderManager;
 	delete textureManager;
+}
+
+ENTT& Scene::getENTT()
+{
+	return entityContainer;
 }

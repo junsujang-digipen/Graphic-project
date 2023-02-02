@@ -11,8 +11,10 @@ Creation date: 11/26/2022
 End Header --------------------------------------------------------*/
 #pragma once
 #include "Entity.h"
-
-class BasicObject :public Entity {
+class Entity;
+class BasicObject : public Entity {
+	Entity* entity{};
 public:
+	//BasicObject(Entity* entt);
 	void draw()override;
 };

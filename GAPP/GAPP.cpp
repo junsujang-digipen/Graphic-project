@@ -11,7 +11,8 @@ Creation date: 09/26/2022
 End Header --------------------------------------------------------*/
 #include "pch.h"
 #include "framework.h"
-
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 #include "GAPP.h"
 #include "Scene.h"
