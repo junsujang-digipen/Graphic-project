@@ -12,6 +12,12 @@ End Header --------------------------------------------------------*/
 #include "pch.h"
 #include "BasicObject.h"
 #include "Shader.h"
+#include "Entity.h"
+
+BasicObject::BasicObject(Entity* entt):entity(entt)
+{
+	entity->getENTT().emplace<>(entity->getID());
+}
 
 void BasicObject::draw()
 {

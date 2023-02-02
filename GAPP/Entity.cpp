@@ -15,7 +15,22 @@ End Header --------------------------------------------------------*/
 #include "Renderer.h"
 #include "Shader.h"
 #include "OBJLoader.h"
+#include <GL/glew.h>
+#include "Scene.h"
 
+Entity::Entity(Scene* sc, ID id):scene(sc), thisID(id)
+{
+}
+
+ID Entity::getID()
+{
+	return thisID;
+}
+
+ENTT& Entity::getENTT()
+{
+	return scene->getENTT();
+}
 
 void Entity::objMatrixUpdate()
 {

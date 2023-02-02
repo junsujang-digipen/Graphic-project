@@ -27,7 +27,6 @@ End Header --------------------------------------------------------*/
 #include "Imgui/imgui.h"
 #include "Imgui/imgui_impl_opengl3.h"
 #include "Imgui/imgui_impl_glfw.h"
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include "glm/glm.hpp"
+#include "Declare.h"
 #endif //PCH_H

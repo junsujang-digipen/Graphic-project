@@ -14,6 +14,8 @@ End Header --------------------------------------------------------*/
 #include "Texture.h"
 #include <stb_image.h>
 #include "Shader.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 Texture::Texture(std::string fileName,unsigned WM): filePath(fileName), wrapMethod(WM)
 {

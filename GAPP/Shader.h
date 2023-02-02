@@ -13,6 +13,12 @@ End Header --------------------------------------------------------*/
 #include <vector>
 #include "glm/glm.hpp"
 
+
+enum class ShaderType {
+	VERTEX_SHADER,
+	FRAGMENT_SHADER,
+};
+
 typedef unsigned int GLuint;
 typedef char GLchar;
 typedef float GLfloat;
@@ -26,7 +32,7 @@ public:
 	~Shader();
 
 	//const std::string getShaderSourceFromFile(const char* path);
-
+	GLuint compileShader(ShaderType ShaderType, const std::vector<std::string> source);
 	GLuint compileShader(GLuint ShaderType, const std::vector<std::string> source);
 	void attachShader(GLuint shdr);
 	void linkProgram();

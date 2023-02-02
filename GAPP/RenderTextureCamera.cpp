@@ -12,6 +12,8 @@ End Header --------------------------------------------------------*/
 #include "pch.h"
 #include "RenderTextureCamera.h"
 #include "TextureManager.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 RenderTextureCamera::RenderTextureCamera(TextureManager* tm, std::string texName)
 	:Camera(), textureManager(tm), textureName(texName)

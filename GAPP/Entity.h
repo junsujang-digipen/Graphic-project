@@ -11,14 +11,19 @@ Creation date: 09/30/2022
 End Header --------------------------------------------------------*/
 #pragma once
 #include "glm/glm.hpp"
-
+#include "UsingEntt.h"
 #include <vector>
-#include <GL/glew.h>
+
 #include <memory>
 
 class Shader;
 class OBJLoader;
+class Scene;
 class Entity {
+	ID thisID{};
+	Scene* scene{};
+	//component manager
+
 	bool shouldOBJMatrixUpdate{true};
 
 	std::vector<glm::vec3> VertexDatas{};
@@ -34,6 +39,10 @@ class Entity {
 
 	GLuint vao{}, vboForLine{}, vbo{}, vno{}, ibo{},uvbo;
 public:
+	Entity(Scene* sc, ID id);
+	ID getID();
+	ENTT& getENTT();
+
 	std::shared_ptr<Shader> objShader{};
 	std::shared_ptr<Shader> normalVectorShader{};
 

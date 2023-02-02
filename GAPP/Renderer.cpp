@@ -11,6 +11,8 @@ Creation date: 09/29/2022
 End Header --------------------------------------------------------*/
 #include "pch.h"
 #include "Renderer.h"
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 void Renderer::genVertexArray(GLuint* vao)
 {

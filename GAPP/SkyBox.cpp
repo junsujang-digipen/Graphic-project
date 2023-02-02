@@ -16,6 +16,7 @@ End Header --------------------------------------------------------*/
 #include "ShaderManager.h"
 #include "Shader.h"
 #include "textureManager.h"
+#include <GL/glew.h>
 
 void SkyBox::genShader()
 {
