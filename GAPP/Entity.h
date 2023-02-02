@@ -39,6 +39,7 @@ class Entity {
 
 	GLuint vao{}, vboForLine{}, vbo{}, vno{}, ibo{},uvbo;
 public:
+	Entity() {}
 	Entity(Scene* sc, ID id);
 	ID getID();
 	ENTT& getENTT();

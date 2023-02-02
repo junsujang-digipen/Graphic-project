@@ -14,10 +14,10 @@ End Header --------------------------------------------------------*/
 #include "Shader.h"
 #include "Entity.h"
 
-BasicObject::BasicObject(Entity* entt):entity(entt)
-{
-	entity->getENTT().emplace<>(entity->getID());
-}
+//BasicObject::BasicObject(Entity* entt):entity(entt)
+//{
+//	entity->getENTT().emplace<>(entity->getID());
+//}
 
 void BasicObject::draw()
 {
