@@ -18,7 +18,7 @@ int main() {
 	app.Init();
 
 
-	TestScene ttscene{};
+	//TestScene ttscene{};
 	TestScene2 ttscene2{};
 	app.SetScene(0, ttscene2);
 	app.SetNextScene(0);

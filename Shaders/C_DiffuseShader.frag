@@ -1,4 +1,4 @@
-#version 400 core
+#version 460 core
 
 uniform vec3 u_light = vec3(0., 100., 100.);
 uniform vec3 u_light_col = vec3(1., 1., 1.);

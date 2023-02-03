@@ -133,3 +133,4 @@ vec3 calcSkyBoxCubeMapTexCoordWithSide(vec3 point,vec3 pMin,vec3 pMax){
 
 	return vec3(vec2(uv + vec2(1.,1.) )/2.,side);
 }
+

@@ -1,4 +1,4 @@
-#version 400 core
+#version 460 core
 
 layout(location = 2) in vec3 modelPosition;
 

@@ -49,8 +49,10 @@ GLuint Shader::compileShader(ShaderType shaderType, const std::vector<std::strin
 	{
 	case ShaderType::VERTEX_SHADER:
 		reValue = compileShader(GL_VERTEX_SHADER,source);
+		break;
 	case ShaderType::FRAGMENT_SHADER:
 		reValue = compileShader(GL_FRAGMENT_SHADER,source);
+		break;
 	default:
 		break;
 	}

@@ -29,7 +29,7 @@ public:
 	Scene();
 	virtual ~Scene();
 	virtual void Load() {};
-	virtual void Update(double dt) {};
+	virtual void Update(double /*dt*/) {};
 	//virtual void ImGUIUpdate() = 0;
 	virtual void Draw() {};
 	virtual void Unload() {};

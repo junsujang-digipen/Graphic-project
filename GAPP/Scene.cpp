@@ -19,7 +19,7 @@ Entity* Scene::makeEntity()
 {
 	ID temp = entityContainer.create();
 
-	Entity tempEntity = entityContainer.emplace<Entity>(temp,this,temp);
+	Entity& tempEntity = entityContainer.emplace<Entity>(temp,this,temp);
 
 	return &tempEntity;
 }

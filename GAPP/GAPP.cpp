@@ -18,6 +18,22 @@ End Header --------------------------------------------------------*/
 #include "Scene.h"
 #include "SceneManager.h"
 
+void GLAPIENTRY OpenGLMessageCallback(
+	GLenum /*source*/,
+	GLenum type,
+	GLuint /*id*/,
+	GLenum severity,
+	GLsizei /*length*/,
+	const GLchar* message,
+	const void* /*userParam*/)
+{
+	if (GL_DEBUG_TYPE_OTHER == type)
+		return;
+	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+		(type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+		type, severity, message);
+}
+
 void GAPP::Init()
 {	
 	if (!glfwInit())
@@ -28,7 +44,7 @@ void GAPP::Init()
 		return;
 	}
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
 	glfwWindowHint(GLFW_RED_BITS, 8);
@@ -64,6 +80,10 @@ void GAPP::Init()
 		return;
 	}
 
+	glEnable(GL_DEBUG_OUTPUT);
+
+	glDebugMessageCallback(OpenGLMessageCallback, nullptr);
+
 	sceneManager = new SceneManager{};
 
 }
@@ -88,7 +108,7 @@ void GAPP::Update()
 
 		// Setup Platform/Renderer bindings
 		ImGui::StyleColorsDark();
-		const char* glsl_version = "#version 400";
+		const char* glsl_version = "#version 460";
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init(glsl_version);
 	}
