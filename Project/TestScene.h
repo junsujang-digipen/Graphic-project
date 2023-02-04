@@ -5,7 +5,7 @@ File Name: TestScene.h
 Purpose: Scene for testing objs and loader and shaders
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
+Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/27/2022
 End Header --------------------------------------------------------*/

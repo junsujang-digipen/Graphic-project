@@ -5,7 +5,7 @@ File Name: Scene.h
 Purpose: Base of scenes
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
+Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/27/2022
 End Header --------------------------------------------------------*/
@@ -20,6 +20,8 @@ class Scene {
 protected:
 	ENTT entityContainer{};
 
+	GAPP* engine{};
+
 	ShaderManager* shaderManager{};
 	TextureManager* textureManager{};
 
@@ -28,6 +30,7 @@ protected:
 public:
 	Scene();
 	virtual ~Scene();
+	void setEngine(GAPP* app);
 	virtual void Load() {};
 	virtual void Update(double /*dt*/) {};
 	//virtual void ImGUIUpdate() = 0;

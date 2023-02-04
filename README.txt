@@ -18,27 +18,26 @@ Any assumption that you make on how to use the application that, if violated, mi
 - Set the "Project" project to start project
 
 Which part of the assignment has been completed?
-- All
+- All except Camera movement part
 
 Which part of the assignment has NOT been completed (not done, not working, etc.) and explanation on why those parts are not completed?
-- Nothing
+- Camera movement part is not done. ImGui Input is not working for me.
 
 Where the relevant source codes (both C++ and shaders) for the assignment are located. Specify the file path (folder name), file name, function name (or line number).
-- Sky box rendering
-	- Folder name: GAPP
-	- File name: SkyBox.h, .cpp
+- Scene generation 
+	- Folder name: Project
+	- File name: TestScene2.cpp (line 47)
+- Deferred Shading
+	- Folder name: Project
+	- File name: TestScene2.cpp (line 81, 527)
 	- Folder name: Shaders
-	- File name: FF_CommonFunctions.glsl (line 91), F_SkyBoxShader.frag
-- Scene setup & Environment Map generation
-	- Folder name: GAPP
-	- File name: TestScene2.cpp (line 107,497)
-	- File name: RenderTextureCamera.h, .cpp
-- Environment Map application in shaders
-	- Folder name: Shaders
-	- File name: F_PhongShadingReflectShader.frag (line 151)
-- User Interactivity – Rendering
-	- Folder name: GAPP
-	- File name: TestScene2.cpp (line 366) 
+	- File name: F_GeometryStageShader.vert, .frag, F_LightingShaderForLight.vert, .frag
+- Forward Shading
+	- Folder name: Project
+	- File name: TestScene2.cpp (line 577)
+- Interactivity
+	- Folder name: Project
+	- File name: TestScene2.cpp (line 372) 
 
 Which machine did you test your application on.
 - Indivisual laptop. 
@@ -47,7 +46,7 @@ If remote – specify OS, GPU, and OpenGL Driver version.
 - Windows 10, GTX 1660 Ti, 4.6
 
 The average number of hours you spent on the assignment, on a weekly basis
-- about 8 hours per a week.
+- about 4 hours per a week.
 
 Any other useful information pertaining to the application 
 - Nothing

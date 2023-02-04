@@ -5,11 +5,12 @@ File Name: GAPP.h
 Purpose: For setting engine and window
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
+Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/26/2022
 End Header --------------------------------------------------------*/
 #pragma once
+#include "glm/glm.hpp"
 
 class Scene;
 class SceneManager;
@@ -38,4 +39,7 @@ public:
 	void Update();
 
 	void APPOff();
+
+	const GLFWwindow* GetWindow() const;
+	const glm::vec2 GetWindowSize() const;
 };

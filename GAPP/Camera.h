@@ -5,7 +5,7 @@ File Name: Camera.h
 Purpose: Camera matrix functions
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
+Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/28/2022
 End Header --------------------------------------------------------*/
@@ -68,6 +68,7 @@ public:
 	float getheight() { return height; }
 	float getFarWidth() { return width / distance * far; }
 	glm::vec3 getViewDirec() { return backDirection * -1.f; }
+	glm::vec3 getRightDirec() { return rightDirection; }
 	glm::vec3 getAngle();
 
 	void setDistance(float dist) { distance = dist; matrixUpdate = true; }

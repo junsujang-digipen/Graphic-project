@@ -5,7 +5,7 @@ File Name: GAPP.cpp
 Purpose: For setting engine and window
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
+Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/26/2022
 End Header --------------------------------------------------------*/
@@ -34,8 +34,14 @@ void GLAPIENTRY OpenGLMessageCallback(
 		type, severity, message);
 }
 
+void Key_callback_func(GLFWwindow* /*pwin*/, int /*key*/, int /*scancode*/, int /*action*/, int /*mod*/)
+{
+	
+}
+
 void GAPP::Init()
 {	
+	glfwMakeContextCurrent(NULL);
 	if (!glfwInit())
 	{
 		std::cout << "GLFW init Failed"<<std::endl;
@@ -63,6 +69,11 @@ void GAPP::Init()
 	}
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
+
+	glfwSetKeyCallback(window, Key_callback_func);
+	//glfwSetMouseButtonCallback(window, Mouse::MouseButton_callback_func);
+	//glfwSetScrollCallback(window, Mouse::MouseScroll_callback_func);
+	//glfwSetCursorPosCallback(window, Mouse::MousePosition_callback_func);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	GLenum err = glewInit();
@@ -91,6 +102,7 @@ void GAPP::Init()
 void GAPP::SetScene(int i, Scene& scene)
 {
 	//set scene number in S.M
+	scene.setEngine(this);
 	sceneManager->BindScene(i, scene);
 }
 
@@ -101,23 +113,26 @@ void GAPP::SetNextScene(int i)
 
 void GAPP::Update()
 {
-	{
-		// Setup ImGui context
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-
-		// Setup Platform/Renderer bindings
-		ImGui::StyleColorsDark();
-		const char* glsl_version = "#version 460";
-		ImGui_ImplGlfw_InitForOpenGL(window, true);
-		ImGui_ImplOpenGL3_Init(glsl_version);
-	}
+	
+	// Setup ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	// Setup Platform/Renderer bindings
+	ImGui::StyleColorsDark();
+	const char* glsl_version = "#version 460";
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
+		
+	
 	sceneManager->Init();
 
 	bool engineLoop{true};
 
 	do
 	{
+		glfwGetWindowSize(window,&windowWidth,&windowHeight);
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS && glfwWindowShouldClose(window) != 0) {
 			sceneManager->exit();
 			engineLoop = false;
@@ -139,4 +154,12 @@ void GAPP::APPOff()
 		ImGui::DestroyContext();
 	}
 	glfwTerminate();
+}
+
+const GLFWwindow* GAPP::GetWindow()const {
+	return window;
+}
+
+const glm::vec2 GAPP::GetWindowSize() const{
+	return {windowWidth,windowHeight};
 }

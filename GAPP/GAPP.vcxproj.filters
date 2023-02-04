@@ -78,6 +78,9 @@
     <ClInclude Include="UsingEntt.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="FSQ.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GAPP.cpp">
@@ -132,6 +135,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="RenderTextureCamera.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="FSQ.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

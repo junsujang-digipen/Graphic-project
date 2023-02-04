@@ -5,7 +5,7 @@ File Name: UsingEntt.h
 Purpose: Using entt and some declarations
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
+Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 02/02/2023
 End Header --------------------------------------------------------*/

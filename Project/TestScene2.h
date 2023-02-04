@@ -5,7 +5,7 @@ File Name: TestScene2.h
 Purpose: Scene for testing objs and loader and shaders
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
+Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 11/22/2022
 End Header --------------------------------------------------------*/
@@ -23,13 +23,12 @@ class TestScene2 :public Scene {
 
 	glm::mat4 WTC{};
 	Camera* camera{};
-	std::shared_ptr<Shader> diffuseShader{};
 	std::shared_ptr<Shader> NormalShdrProgram{};
 	std::shared_ptr<Shader> LightShader{};
 	std::vector<std::shared_ptr<Entity>> Obj{};
 	std::vector<std::shared_ptr<Entity>> ObjSpheres{};
 	std::shared_ptr<Entity> ObjCircleLine{};
-	std::shared_ptr<Entity> OBjSkyBox{};
+	std::shared_ptr<Entity> screenRect{};
 
 	int OBJtextureMappingNum{ 0 };
 	bool IsGPUtextureMapping{ true };
@@ -47,8 +46,15 @@ class TestScene2 :public Scene {
 
 	short nowScenario{ 0 };
 
-	
-	std::vector<std::shared_ptr<RenderTextureCamera>> renderTargetCamera{};
+
+	// Gbuffer
+	unsigned m_gBufferFBO{};
+	static const int renderTextureNum{ 6 };
+	unsigned m_textures[renderTextureNum]{};
+	unsigned m_depthTexture{};
+	unsigned rboDepth{};
+	//
+	bool shouldDepthCopy{true};
 
 public:
 	TestScene2();

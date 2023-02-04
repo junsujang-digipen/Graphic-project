@@ -5,7 +5,7 @@ File Name: OBJLoader.h
 Purpose: For load obj file
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
+Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/29/2022
 End Header --------------------------------------------------------*/
@@ -105,6 +105,29 @@ inline void MakeSphereData(int stacks, int slices, std::vector<glm::vec3>& pos_v
 		face_nrm_vtx.push_back(FaceNormal);
 		face_nrm_vtx.push_back(FaceNormal);
 	}
+}
+inline void MakeScreenData( std::vector<glm::vec3>& pos_vtx, std::vector<glm::vec2>& UV_vtx, std::vector<GLuint>& idx_vtx)
+{
+	pos_vtx.push_back({  0.5f,  0.5f, 0.0f });
+	pos_vtx.push_back({ -0.5f, -0.5f, 0.0f });
+	pos_vtx.push_back({  0.5f, -0.5f, 0.0f });
+	pos_vtx.push_back({ -0.5f,  0.5f, 0.0f });
+	pos_vtx.push_back({ -0.5f, -0.5f, 0.0f });
+	pos_vtx.push_back({  0.5f,  0.5f, 0.0f });
+
+	UV_vtx.push_back({1.0f, 1.0f});
+	UV_vtx.push_back({0.0f, 0.0f});
+	UV_vtx.push_back({1.0f, 0.0f});
+	UV_vtx.push_back({0.0f, 1.0f});
+	UV_vtx.push_back({0.0f, 0.0f});
+	UV_vtx.push_back({1.0f, 1.0f});
+
+	idx_vtx.push_back(0);
+	idx_vtx.push_back(1);
+	idx_vtx.push_back(2);
+	idx_vtx.push_back(3);
+	idx_vtx.push_back(4);
+	idx_vtx.push_back(5);
 }
 inline void MakeCircleLineData(int num, std::vector<glm::vec3>& pos_vtx, std::vector<glm::vec3>& vertex_nrm_vtx, std::vector<glm::vec3>& /*face_nrm_vtx*/,  std::vector<GLuint>& idx_vtx)
 {

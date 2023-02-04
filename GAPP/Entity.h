@@ -5,7 +5,7 @@ File Name: Entity.h
 Purpose: For storing Entity datas
 Language: c++
 Platform: x64
-Project: junsu.jang, CS300, Assignment 3 - Dynamic Environment Mapping
+Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/30/2022
 End Header --------------------------------------------------------*/
@@ -20,6 +20,7 @@ class Shader;
 class OBJLoader;
 class Scene;
 class Entity {
+protected:
 	ID thisID{};
 	Scene* scene{};
 	//component manager
@@ -37,7 +38,7 @@ class Entity {
 
 	std::vector<glm::vec2> VertexUVDatas{};
 
-	GLuint vao{}, vboForLine{}, vbo{}, vno{}, ibo{},uvbo;
+	GLuint vao{}, vboForLine{}, vbo{}, vno{}, ibo{}, uvbo{};
 public:
 	Entity() {}
 	Entity(Scene* sc, ID id);
