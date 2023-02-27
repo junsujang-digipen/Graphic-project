@@ -13,6 +13,7 @@ End Header --------------------------------------------------------*/
 #include "Scene.h"
 #include "ShaderManager.h"
 #include "TextureManager.h"
+#include "MeshManager.h"
 #include "Entity.h"
 
 Entity* Scene::makeEntity()
@@ -28,12 +29,14 @@ Scene::Scene()
 {
 	shaderManager = new ShaderManager{};
 	textureManager = new TextureManager{};
+	meshManager = new MeshManager{};
 }
 
 Scene::~Scene()
 {
 	delete shaderManager;
 	delete textureManager;
+	delete meshManager;
 }
 
 void Scene::setEngine(GAPP* app) {

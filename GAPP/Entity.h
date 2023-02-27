@@ -19,28 +19,18 @@ End Header --------------------------------------------------------*/
 class Shader;
 class OBJLoader;
 class Scene;
+class ComponentManager;
 class Entity {
 protected:
 	ID thisID{};
 	Scene* scene{};
-	//component manager
+	ComponentManager* compoManager{};
+
 
 	bool shouldOBJMatrixUpdate{true};
 
-	std::vector<glm::vec3> VertexDatas{};
-	std::vector<glm::vec3> FaceNormalDatas{};
-	std::vector<glm::vec3> VertexNormalDatas{};
-	std::vector<glm::vec3> VertexTextureDatas{};
-	std::vector<GLuint> idxDatas{};
-	std::vector<glm::vec3> VertexNormalDrawVec{};
-	std::vector<glm::vec3> FaceNormalDrawVec{};
-	unsigned int primitive_type{ GL_TRIANGLES };
-
-	std::vector<glm::vec2> VertexUVDatas{};
-
-	GLuint vao{}, vboForLine{}, vbo{}, vno{}, ibo{}, uvbo{};
 public:
-	Entity() {}
+	Entity(Scene* sc);
 	Entity(Scene* sc, ID id);
 	ID getID();
 	ENTT& getENTT();
@@ -48,8 +38,7 @@ public:
 	std::shared_ptr<Shader> objShader{};
 	std::shared_ptr<Shader> normalVectorShader{};
 
-	glm::vec3 boundBoxMax{ 1.f };
-	glm::vec3 boundBoxMin{ -1.f };
+	int MeshID{};
 
 	glm::vec3 pos{};
 	glm::vec3 scale{1.};
@@ -59,18 +48,13 @@ public:
 	void objMatrixUpdate();
 	void setPos(const glm::vec3 &p);
 	void setScale(const glm::vec3 &s);
+	const glm::vec3& getScale() { return scale; }
 	void setRotate(const glm::vec3 &r);
-	void GetDataForOBJLoader(OBJLoader& objLoader);
+	
 
-	virtual void load();
-	virtual void unload();
+
 	virtual void update(double dt);
 	virtual void draw();
 	virtual void drawNormal(int num);
 
-	bool IsPositionEntity{true};
-	void calcSphereTexCoord();
-	void calcCylindricalTexCoord();
-	void calcPlanarTexCoord();
-	void calcCubeMapTexCoord();
 };

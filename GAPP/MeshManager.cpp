@@ -1,0 +1,42 @@
+/* Start Header -------------------------------------------------------
+Copyright (C) <current year in format 2022> DigiPen Institute of Technology.
+Reproduction or disclosure of this file or its contents without the prior written consent of DigiPen Institute of Technology is prohibited.
+File Name: MeshManager.cpp
+Purpose: For load obj file
+Language: c++
+Platform: x64
+Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
+Author: Junsu Jang, junsu.jang, 0055891
+Creation date: 02/26/2023
+End Header --------------------------------------------------------*/
+#include "pch.h"
+#include "MeshManager.h"
+MeshManager::MeshManager()
+{
+}
+
+MeshManager::~MeshManager()
+{
+	for (auto& m:Meshes) {
+		m.unload();
+	}
+	Meshes.clear();
+}
+
+int MeshManager::push_MeshData(MeshData& md)
+{
+	md.load();
+	Meshes.push_back(md);
+	return static_cast<int>(Meshes.size() - 1);
+}
+
+const MeshData& MeshManager::getMeshData(int i)
+{
+	return Meshes[i];
+}
+
+MeshData& MeshManager::getMeshDataRef(int i)
+{
+	return Meshes[i];
+}
+

@@ -15,6 +15,7 @@ End Header --------------------------------------------------------*/
 class GAPP;
 class ShaderManager;
 class TextureManager;
+class MeshManager;
 class Entity;
 class Scene {
 protected:
@@ -24,7 +25,7 @@ protected:
 
 	ShaderManager* shaderManager{};
 	TextureManager* textureManager{};
-
+	MeshManager* meshManager{};
 	Entity* makeEntity();
 
 public:
@@ -38,4 +39,7 @@ public:
 	virtual void Unload() {};
 
 	ENTT& getENTT();
+	ShaderManager* getShaderManager() { return shaderManager; }
+	TextureManager* getTextureManager() { return textureManager; }
+	MeshManager* getMeshManager() {return meshManager;}
 };

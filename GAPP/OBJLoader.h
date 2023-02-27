@@ -12,7 +12,9 @@ End Header --------------------------------------------------------*/
 #pragma once
 #include "glm/glm.hpp"
 #include "Declare.h"
+#include "MeshData.h"
 
+struct MyStruct;
 class OBJLoader{
 public:
 	std::string meshName{};
@@ -30,6 +32,7 @@ public:
 	OBJLoader() = default;
 	void FileLoad(const char* path);
 	std::vector<glm::vec3> VertexArrayData();
+	MeshData makeMeshData(const glm::vec3& objScale);
 };
 
 inline bool DegenerateTri(const glm::vec3& v0, const  glm::vec3& v1, const  glm::vec3& v2)
@@ -108,12 +111,12 @@ inline void MakeSphereData(int stacks, int slices, std::vector<glm::vec3>& pos_v
 }
 inline void MakeScreenData( std::vector<glm::vec3>& pos_vtx, std::vector<glm::vec2>& UV_vtx, std::vector<GLuint>& idx_vtx)
 {
-	pos_vtx.push_back({  0.5f,  0.5f, 0.0f });
-	pos_vtx.push_back({ -0.5f, -0.5f, 0.0f });
-	pos_vtx.push_back({  0.5f, -0.5f, 0.0f });
-	pos_vtx.push_back({ -0.5f,  0.5f, 0.0f });
-	pos_vtx.push_back({ -0.5f, -0.5f, 0.0f });
-	pos_vtx.push_back({  0.5f,  0.5f, 0.0f });
+	pos_vtx.push_back({ 1.f,  1.f, 0.0f });
+	pos_vtx.push_back({ -1.f, -1.f, 0.0f });
+	pos_vtx.push_back({ 1.f, -1.f, 0.0f });
+	pos_vtx.push_back({ -1.f,  1.f, 0.0f });
+	pos_vtx.push_back({ -1.f, -1.f, 0.0f });
+	pos_vtx.push_back({ 1.f,  1.f, 0.0f });
 
 	UV_vtx.push_back({1.0f, 1.0f});
 	UV_vtx.push_back({0.0f, 0.0f});

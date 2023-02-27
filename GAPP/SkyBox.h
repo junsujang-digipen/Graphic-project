@@ -21,19 +21,17 @@ class SkyBox :public Entity {
 	TextureManager* textureManager{};
 	std::string skyBoxShaderName{ "SkyBox Shader" };
 	void genShader();
+	void load();
 public:
-	
-	SkyBox(ShaderManager* sm, TextureManager* tm);
+	SkyBox(Scene* sc, ID id);
 	//SkyBox(ShaderManager* sm, TextureManager* tm, std::string cubeMapPath);
-	SkyBox(ShaderManager* sm, TextureManager* tm, std::string left, std::string right, std::string bottom, std::string top, std::string back, std::string front);
+	//SkyBox(ShaderManager* sm, TextureManager* tm, std::string left, std::string right, std::string bottom, std::string top, std::string back, std::string front);
 
 	virtual ~SkyBox();
 	void setTargetCamera(Camera*);
 	//void setTexture(std::string cubeMapPath);
 	void setTexture(std::string left, std::string right, std::string bottom, std::string top, std::string back, std::string front);
 
-	void load()override;
-	//void unload()override;
 	void update(double dt)override;
 	void draw()override;
 	void drawNormal(int num)override;

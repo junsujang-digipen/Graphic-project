@@ -38,8 +38,8 @@ class Light :public Entity {
     //std::shared_ptr<Shader> lightingShader{};
 
 public:
-    //void load()override;
-    //void unload()override;
+    using Entity::Entity;
+
     void update(double dt)override;
     void draw()override;
     void sendLightDataUniform(std::shared_ptr<Shader> shader, const std::string uniformName);

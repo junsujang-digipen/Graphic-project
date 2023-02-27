@@ -15,6 +15,7 @@ class Entity;
 class BasicObject : public Entity {
 	Entity* entity{};
 public:
+	using Entity::Entity;
 	//BasicObject(Entity* entt);
 	void draw()override;
 };

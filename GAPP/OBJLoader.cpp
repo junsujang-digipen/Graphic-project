@@ -13,9 +13,6 @@ End Header --------------------------------------------------------*/
 #include "OBJLoader.h"
 #include <sstream>
 #include <fstream>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
 
 void OBJLoader::FileLoad(const char* path)
 {
@@ -152,4 +149,25 @@ std::vector<glm::vec3> OBJLoader::VertexArrayData()
 		vad.push_back(VertexDatas[idxDatas[i]]);
 	}
 	return vad;
+}
+
+MeshData OBJLoader::makeMeshData(const glm::vec3 &objScale)
+{
+	MeshData temp{};
+	temp.VertexDatas = VertexDatas;
+	temp.FaceNormalDatas = FaceNormalDatas;
+	temp.VertexNormalDatas = VertexNormalDatas;
+	temp.VertexTextureDatas = VertexTextureDatas;
+	temp.idxDatas = idxDatas;
+	temp.primitive_type = primitive_type;
+	temp.boundBoxMax = boundBoxMax;
+	temp.boundBoxMin = boundBoxMin;
+
+	makeNormalDrawVec(VertexDatas,VertexNormalDatas, temp.VertexNormalDrawVec, objScale, 2.f);
+	if (FaceNormalDatas.size() > 0)
+	{
+		std::vector<glm::vec3> vertexArrayData{ VertexArrayData() };
+		makeFaceNormalDrawVec(vertexArrayData, FaceNormalDatas, temp.FaceNormalDrawVec, objScale, 1.f);
+	}
+	return temp;
 }

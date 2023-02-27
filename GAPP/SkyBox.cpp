@@ -17,6 +17,8 @@ End Header --------------------------------------------------------*/
 #include "Shader.h"
 #include "textureManager.h"
 #include <GL/glew.h>
+#include "Scene.h"
+#include "MeshManager.h"
 
 void SkyBox::genShader()
 {
@@ -35,20 +37,16 @@ void SkyBox::genShader()
 	objShader = SkyBoxShader;
 }
 
-SkyBox::SkyBox(ShaderManager* sm, TextureManager* tm):Entity(),shaderManager(sm),textureManager(tm)
+SkyBox::SkyBox(Scene* sc, ID id):Entity(sc,id), shaderManager(sc->getShaderManager()),textureManager(sc->getTextureManager())
 {
-	genShader();
+	load();
 }
 
-//SkyBox::SkyBox(ShaderManager* sm, TextureManager* tm, std::string cubeMapPath)
-//	: SkyBox(sm,tm)
+
+//SkyBox::SkyBox(ShaderManager* sm, TextureManager* tm, std::string left, std::string right, std::string bottom, std::string top, std::string back, std::string front)
+//	:SkyBox(sm, tm)
 //{
 //}
-
-SkyBox::SkyBox(ShaderManager* sm, TextureManager* tm, std::string left, std::string right, std::string bottom, std::string top, std::string back, std::string front)
-	:SkyBox(sm, tm)
-{
-}
 
 SkyBox::~SkyBox()
 {
@@ -78,18 +76,16 @@ void SkyBox::setTexture(std::string left, std::string right, std::string bottom,
 
 void SkyBox::load()
 {
+	genShader();
+
 	OBJLoader Temp{};
 	Temp.FileLoad("../Objects/SkyBox.obj");
 	setScale(glm::vec3(1.f, 1.f, 1.f));
-	GetDataForOBJLoader(Temp);
-
-
-	Entity::load();
+	MeshData tempMD{Temp.makeMeshData(scale)};
+	scene->getMeshManager()->push_MeshData(tempMD);
 }
 
-//void SkyBox::unload()
-//{
-//}
+
 
 void SkyBox::update(double dt)
 {

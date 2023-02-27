@@ -19,6 +19,8 @@ End Header --------------------------------------------------------*/
 #include "ShaderManager.h"
 #include "Shader.h"
 
+#include <MeshManager.h>
+
 #include "Renderer.h"
 #include "BasicObject.h"
 #include "SkyBox.h"
@@ -156,13 +158,12 @@ void TestScene2::Load()
 			"./sphere.obj" ,
 			"./sphere_modified.obj" };
 		for (int i = 0; i < 5; ++i) {
+			Obj.push_back(std::make_shared<BasicObject>(this));
 			OBJLoader objLoader{};
 			objLoader.FileLoad(filepaths[i]);
-			Obj.push_back(std::make_shared<BasicObject>());
+			MeshData tempMD{ objLoader.makeMeshData(Obj[i]->getScale()) };
+			Obj[i]->MeshID = meshManager->push_MeshData(tempMD);
 			Obj[i]->setScale(glm::vec3(50.f));
-			Obj[i]->GetDataForOBJLoader(objLoader);
-			Obj[i]->load();
-
 			Obj[i]->objShader = shaderManager->getShader("Geometry stage Shader");
 			Obj[i]->normalVectorShader = NormalShdrProgram;
 		}
@@ -177,22 +178,22 @@ void TestScene2::Load()
 		}
 	}
 	{//screen rect
-		screenRect = std::make_shared<FSQ>();
-		screenRect->load();
+		screenRect = std::make_shared<FSQ>(this, ID{});
 
 		screenRect->objShader = shaderManager->getShader("Lighting stage Shader");
 	}
 
 	//Orbit
 	{
-		ObjCircleLine = std::make_shared<BasicObject>();
+		ObjCircleLine = std::make_shared<BasicObject>(this);
 		OBJLoader Temp{};
 		MakeCircleLineData(100, Temp.VertexDatas, Temp.VertexNormalDatas, Temp.FaceNormalDatas, Temp.idxDatas);
 		Temp.primitive_type = GL_LINES;
 		ObjCircleLine->setPos(glm::vec3(0.f, 0.f, 0.f));
 		ObjCircleLine->setScale(glm::vec3(200.f));
-		ObjCircleLine->GetDataForOBJLoader(Temp);
-		ObjCircleLine->load();
+
+		MeshData tempMD{ Temp.makeMeshData(ObjCircleLine->getScale()) };
+		ObjCircleLine->MeshID = meshManager->push_MeshData(tempMD);
 
 		ObjCircleLine->objShader = LightShader;
 		ObjCircleLine->normalVectorShader = NormalShdrProgram;
@@ -200,17 +201,18 @@ void TestScene2::Load()
 	//sphere
 	{
 		const int SpMax{ 16 };
+		OBJLoader Temp{};
+		MakeSphereData(20, 20, Temp.VertexDatas, Temp.VertexNormalDatas, Temp.FaceNormalDatas, Temp.idxDatas);
+		MeshData tempMD{ Temp.makeMeshData(ObjCircleLine->getScale()) };
+		int tempMeshID{ meshManager->push_MeshData(tempMD) };
 		for (int i = 0; i < SpMax; ++i) {
-			ObjSpheres.push_back(std::make_shared<Light>());
-			OBJLoader Temp{};
-			MakeSphereData(20, 20, Temp.VertexDatas, Temp.VertexNormalDatas, Temp.FaceNormalDatas, Temp.idxDatas);
+			ObjSpheres.push_back(std::make_shared<Light>(this));
 			float now = (float)i / SpMax;
 			float alpha = now * 3.14f * 2.f;
 			glm::vec3 pos = glm::vec3{ ObjCircleLine->scale.x / 2.f * sin(alpha),0.f,ObjCircleLine->scale.x / 2.f * cos(alpha) };
 			ObjSpheres[i]->setPos(pos);
 			ObjSpheres[i]->setScale(glm::vec3(10.f));
-			ObjSpheres[i]->GetDataForOBJLoader(Temp);
-			ObjSpheres[i]->load();
+			ObjSpheres[i]->MeshID = tempMeshID;
 			std::string lightLniformName{ "lightSources[" + std::to_string(i) + ("]") };
 			dynamic_cast<Light*>(ObjSpheres[i].get())->sendLightDataUniform(shaderManager->getShader("Lighting stage Shader"), lightLniformName);
 			ObjSpheres[i]->objShader = LightShader;
@@ -303,7 +305,7 @@ void TestScene2::Update(double dt)
 			ImGui::Checkbox("GPU texture mapping", &IsGPUtextureMapping);
 			ImGui::Checkbox("Position Entity mapping", &IsPositionEntityMapping);
 			for (auto& o : Obj) {
-				o->IsPositionEntity = IsPositionEntityMapping;
+				meshManager->getMeshDataRef(o->MeshID).IsPositionEntity = IsPositionEntityMapping;
 			}
 			static char* currItem{};
 			if (ImGui::BeginCombo("Texture mapping Choose", currItem) == true) {
@@ -321,19 +323,19 @@ void TestScene2::Update(double dt)
 
 				if (one == true) {
 					OBJtextureMappingNum = 0;
-					Obj[nowObj]->calcSphereTexCoord();
+					meshManager->getMeshDataRef(Obj[nowObj]->MeshID).calcSphereTexCoord();
 				}
 				if (two == true) {
 					OBJtextureMappingNum = 1;
-					Obj[nowObj]->calcCylindricalTexCoord();
+					meshManager->getMeshDataRef(Obj[nowObj]->MeshID).calcCylindricalTexCoord();
 				}
 				if (three == true) {
 					OBJtextureMappingNum = 2;
-					Obj[nowObj]->calcPlanarTexCoord();
+					meshManager->getMeshDataRef(Obj[nowObj]->MeshID).calcPlanarTexCoord();
 				}
 				if (four == true) {
 					OBJtextureMappingNum = 3;
-					Obj[nowObj]->calcCubeMapTexCoord();
+					meshManager->getMeshDataRef(Obj[nowObj]->MeshID).calcCubeMapTexCoord();
 				}
 				if (five == true) {
 					OBJtextureMappingNum = 4;
@@ -533,8 +535,8 @@ void TestScene2::Draw()
 		shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("MatEmissive", ObjEmissive);
 		shaderManager->getShader("Geometry stage Shader")->sendUniform1iv("isGPUMapping", IsGPUtextureMapping);
 		shaderManager->getShader("Geometry stage Shader")->sendUniform1iv("isPositionEntity", IsPositionEntityMapping);
-		shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("boundMax", Obj[nowObj]->boundBoxMax);
-		shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("boundMin", Obj[nowObj]->boundBoxMin);
+		shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("boundMax", meshManager->getMeshData(Obj[nowObj]->MeshID).boundBoxMax);
+		shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("boundMin", meshManager->getMeshData(Obj[nowObj]->MeshID).boundBoxMin);
 		Obj[nowObj]->draw();
 
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -601,14 +603,9 @@ void TestScene2::Draw()
 
 void TestScene2::Unload()
 {
-	for (auto& o : Obj) {
-		o->unload();
-	}
+
 	Obj.clear();
-	for (auto& ObjSphere : ObjSpheres) {
-		ObjSphere->unload();
-	}
+
 	ObjSpheres.clear();
-	ObjCircleLine->unload();
-	screenRect->unload();
+
 }

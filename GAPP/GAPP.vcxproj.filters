@@ -81,6 +81,21 @@
     <ClInclude Include="FSQ.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="AssimpLoader.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshData.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ComponentManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GAPP.cpp">
@@ -138,6 +153,21 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="FSQ.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="AssimpLoader.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshData.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
