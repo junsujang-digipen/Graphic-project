@@ -13,6 +13,10 @@ End Header --------------------------------------------------------*/
 #include "OBJLoader.h"
 #include <sstream>
 #include <fstream>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 void OBJLoader::FileLoad(const char* path)
 {
 	std::ifstream OBJFile{path, std::ios::in};

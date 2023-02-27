@@ -24,8 +24,8 @@ End Header --------------------------------------------------------*/
 #include "Random.h"
 
 
-#include <lib/include/GL/glew.h>
-#include <lib/include/GLFW/glfw3.h>
+#include <Externals/include/GL/glew.h>
+#include <Externals/include/GLFW/glfw3.h>
 
 TestScene::TestScene(): Scene(),SpCurrNum(1)
 {

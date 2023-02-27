@@ -23,7 +23,7 @@ End Header --------------------------------------------------------*/
 #include "BasicObject.h"
 #include "SkyBox.h"
 #include "Light.h"
-#include <lib/include/stb_image.h>//??
+#include <Externals/include/stb_image.h>//??
 
 #include "TextureManager.h"
 #include "Texture.h"
@@ -32,8 +32,8 @@ End Header --------------------------------------------------------*/
 #include "RenderTextureCamera.h"
 
 #include <GAPP.h>
-#include <lib/include/GL/glew.h>
-#include <lib/include/GLFW/glfw3.h>
+#include <Externals/include/GL/glew.h>
+#include <Externals/include/GLFW/glfw3.h>
 #include <FSQ.h>
 #include <Imgui/imgui.h>
 
