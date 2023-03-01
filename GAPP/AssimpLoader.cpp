@@ -15,6 +15,9 @@ End Header --------------------------------------------------------*/
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+void processNode(AssimpLoader& assimp , aiNode* node, const aiScene* scene);
+void processMesh(AssimpLoader& assimp, aiMesh* mesh, const aiScene* scene);
+
 void AssimpLoader::LoadModel(std::string path)
 {
     Assimp::Importer import;
@@ -24,5 +27,41 @@ void AssimpLoader::LoadModel(std::string path)
     {
         std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
         return;
+    }
+    processNode(*this, scene->mRootNode, scene);
+}
+
+MeshData AssimpLoader::MakeMeshData(const glm::vec3& objScale)
+{
+    return MeshData();
+}
+
+
+void processNode(AssimpLoader& assimp, aiNode* node, const aiScene* scene)
+{
+    for (unsigned int i = 0; i < node->mNumMeshes; i++)
+    {
+        aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+        processMesh(assimp, mesh, scene);
+    }
+    for (unsigned int i = 0; i < node->mNumChildren; i++)
+    {
+        processNode(assimp, node->mChildren[i], scene);
+    }
+}
+
+void processMesh(AssimpLoader& assimp, aiMesh* mesh, const aiScene* scene)
+{
+    assimp.primitive_type = mesh->mPrimitiveTypes;
+
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+    {
+        glm::vec3 vertex{ mesh->mVertices[i].x,mesh->mVertices[i].y,mesh->mVertices[i].z};
+        assimp.VertexDatas.push_back(vertex);
+    }
+    // indices 贸府
+    // material 贸府
+    if (mesh->mMaterialIndex >= 0)
+    {
     }
 }

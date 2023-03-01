@@ -17,6 +17,7 @@ class ShaderManager;
 class TextureManager;
 class MeshManager;
 class Entity;
+class ObjManager;
 class Scene {
 protected:
 	ENTT entityContainer{};
@@ -26,14 +27,17 @@ protected:
 	ShaderManager* shaderManager{};
 	TextureManager* textureManager{};
 	MeshManager* meshManager{};
-	Entity* makeEntity();
+	ObjManager* objManager{};
+	//IMGui manager
+
+	ID makeEntity();
 
 public:
 	Scene();
 	virtual ~Scene();
 	void setEngine(GAPP* app);
 	virtual void Load() {};
-	virtual void Update(double /*dt*/) {};
+	virtual void Update(double /*dt*/);
 	//virtual void ImGUIUpdate() = 0;
 	virtual void Draw() {};
 	virtual void Unload() {};
@@ -42,4 +46,5 @@ public:
 	ShaderManager* getShaderManager() { return shaderManager; }
 	TextureManager* getTextureManager() { return textureManager; }
 	MeshManager* getMeshManager() {return meshManager;}
+	ObjManager* getObjManager() { return objManager; }
 };

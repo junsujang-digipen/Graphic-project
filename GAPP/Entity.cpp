@@ -18,13 +18,16 @@ End Header --------------------------------------------------------*/
 #include <GL/glew.h>
 #include "Scene.h"
 #include "MeshManager.h"
+#include "ComponentManager.h"
 
 Entity::Entity(Scene* sc):scene(sc)
 {
+	compoManager = std::make_shared<ComponentManager>(this);
 }
 
 Entity::Entity(Scene* sc, ID id):scene(sc), thisID(id)
 {
+	compoManager = std::make_shared<ComponentManager>(this);
 }
 
 ID Entity::getID()
@@ -67,12 +70,13 @@ void Entity::setRotate(const glm::vec3 &r)
 }
 
 
-void Entity::update(double /*dt*/)
+void Entity::update(double dt)
 {
 	if (shouldOBJMatrixUpdate == true) {
 		objMatrixUpdate();
 		shouldOBJMatrixUpdate = false;
 	}
+	compoManager.get()->update(dt);
 }
 
 void Entity::draw()

@@ -24,7 +24,7 @@ class Entity {
 protected:
 	ID thisID{};
 	Scene* scene{};
-	ComponentManager* compoManager{};
+	std::shared_ptr<ComponentManager> compoManager{};
 
 
 	bool shouldOBJMatrixUpdate{true};

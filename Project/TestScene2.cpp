@@ -225,6 +225,7 @@ void TestScene2::Load()
 
 void TestScene2::Update(double dt)
 {
+	Scene::Update(dt);
 	const int SpMax{ 16 };
 	static const float maxForRandom{ 50 };
 	static bool isRotation{ true };

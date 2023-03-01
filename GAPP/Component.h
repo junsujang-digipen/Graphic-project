@@ -10,7 +10,13 @@ Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 02/27/2023
 End Header --------------------------------------------------------*/
 #pragma once
-
+class Entity;
+class ComponentManager;
 class Component {
+	friend ComponentManager;
+protected:
+	Entity* owner{};
 public:
+	Component(Entity* o);
+	virtual void update(double /*dt*/) {}
 };

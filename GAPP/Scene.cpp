@@ -15,21 +15,24 @@ End Header --------------------------------------------------------*/
 #include "TextureManager.h"
 #include "MeshManager.h"
 #include "Entity.h"
+#include "ObjManager.h"
 
-Entity* Scene::makeEntity()
+ID Scene::makeEntity()
 {
 	ID temp = entityContainer.create();
 
-	Entity& tempEntity = entityContainer.emplace<Entity>(temp,this,temp);
+	//Entity& tempEntity = entityContainer.emplace<Entity>(temp,this,temp);
 
-	return &tempEntity;
+	return temp;
 }
 
 Scene::Scene()
 {
+	
 	shaderManager = new ShaderManager{};
 	textureManager = new TextureManager{};
 	meshManager = new MeshManager{};
+	objManager = new ObjManager{this};
 }
 
 Scene::~Scene()
@@ -37,10 +40,18 @@ Scene::~Scene()
 	delete shaderManager;
 	delete textureManager;
 	delete meshManager;
+	delete objManager;
+
+	entityContainer.clear();
 }
 
 void Scene::setEngine(GAPP* app) {
 	engine = app;
+}
+
+void Scene::Update(double dt)
+{
+	objManager->update(dt);
 }
 
 ENTT& Scene::getENTT()
