@@ -75,7 +75,7 @@
       <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;imgui.lib;assimp-vc143-mtd.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\GAPP\Externals\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\GAPP\Externals\lib;$(SolutionDir)\GAPP\Externals\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -100,7 +100,7 @@
       <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;imgui.lib;assimp-vc143-mtd.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>$(SolutionDir)\GAPP\Externals\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\GAPP\Externals\lib;$(SolutionDir)\GAPP\Externals\bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
@@ -108,7 +108,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AssimpLoader.h" />
+    <ClInclude Include="BasicMeshType.h" />
     <ClInclude Include="BasicObject.h" />
+    <ClInclude Include="BoundingVolumeManager.h" />
+    <ClInclude Include="BoundingVolumeType.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentManager.h" />
@@ -118,6 +121,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="FSQ.h" />
     <ClInclude Include="GAPP.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MeshData.h" />
@@ -140,12 +144,14 @@
   <ItemGroup>
     <ClCompile Include="AssimpLoader.cpp" />
     <ClCompile Include="BasicObject.cpp" />
+    <ClCompile Include="BoundingVolumeManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ComponentManager.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FSQ.cpp" />
     <ClCompile Include="GAPP.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="MAterial.cpp" />
     <ClCompile Include="MeshData.cpp" />

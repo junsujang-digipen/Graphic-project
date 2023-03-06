@@ -77,12 +77,8 @@ void SkyBox::setTexture(std::string left, std::string right, std::string bottom,
 void SkyBox::load()
 {
 	genShader();
-
-	OBJLoader Temp{};
-	Temp.FileLoad("../Objects/SkyBox.obj");
 	setScale(glm::vec3(1.f, 1.f, 1.f));
-	MeshData tempMD{Temp.makeMeshData(scale)};
-	scene->getMeshManager()->push_MeshData(tempMD);
+	MeshID = Cast<int>(BasicMeshType::SkyBox);
 }
 
 

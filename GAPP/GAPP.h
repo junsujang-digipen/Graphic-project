@@ -15,6 +15,7 @@ End Header --------------------------------------------------------*/
 class Scene;
 class SceneManager;
 struct GLFWwindow;
+class Input;
 class GAPP {
 	//friend Scene;
 
@@ -23,7 +24,9 @@ class GAPP {
 	//Renderer
 	//Physics?
 	//ImGUI
+	Input* inputManager{};
 	
+
 	//Event
 	GLFWwindow* window;
 	int windowWidth{ 1200 }, windowHeight{800};
@@ -41,5 +44,6 @@ public:
 	void APPOff();
 
 	const GLFWwindow* GetWindow() const;
+	Input* GetInputManager() const;
 	const glm::vec2 GetWindowSize() const;
 };

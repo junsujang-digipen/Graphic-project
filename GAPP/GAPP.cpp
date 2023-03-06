@@ -17,6 +17,7 @@ End Header --------------------------------------------------------*/
 #include "GAPP.h"
 #include "Scene.h"
 #include "SceneManager.h"
+#include "Input.h"
 
 void GLAPIENTRY OpenGLMessageCallback(
 	GLenum /*source*/,
@@ -34,10 +35,6 @@ void GLAPIENTRY OpenGLMessageCallback(
 		type, severity, message);
 }
 
-void Key_callback_func(GLFWwindow* /*pwin*/, int /*key*/, int /*scancode*/, int /*action*/, int /*mod*/)
-{
-	
-}
 
 void GAPP::Init()
 {	
@@ -70,7 +67,7 @@ void GAPP::Init()
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 
-	glfwSetKeyCallback(window, Key_callback_func);
+	glfwSetKeyCallback(window, Keyboard::Key_callback_func);
 	//glfwSetMouseButtonCallback(window, Mouse::MouseButton_callback_func);
 	//glfwSetScrollCallback(window, Mouse::MouseScroll_callback_func);
 	//glfwSetCursorPosCallback(window, Mouse::MousePosition_callback_func);
@@ -96,7 +93,7 @@ void GAPP::Init()
 	glDebugMessageCallback(OpenGLMessageCallback, nullptr);
 
 	sceneManager = new SceneManager{};
-
+	inputManager = new Input{window};
 }
 
 void GAPP::SetScene(int i, Scene& scene)
@@ -114,18 +111,6 @@ void GAPP::SetNextScene(int i)
 void GAPP::Update()
 {
 	
-	// Setup ImGui context
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO(); (void)io;
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	// Setup Platform/Renderer bindings
-	ImGui::StyleColorsDark();
-	const char* glsl_version = "#version 460";
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init(glsl_version);
-		
-	
 	sceneManager->Init();
 
 	bool engineLoop{true};
@@ -137,6 +122,7 @@ void GAPP::Update()
 			sceneManager->exit();
 			engineLoop = false;
 		}
+		inputManager->Update();
 		sceneManager->Update(0.1);
 
 		glfwSwapBuffers(window);
@@ -148,16 +134,18 @@ void GAPP::Update()
 
 void GAPP::APPOff()
 {
-	{
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
-	}
+	delete sceneManager;
+	delete inputManager;
 	glfwTerminate();
 }
 
 const GLFWwindow* GAPP::GetWindow()const {
 	return window;
+}
+
+Input* GAPP::GetInputManager() const
+{
+	return inputManager;
 }
 
 const glm::vec2 GAPP::GetWindowSize() const{

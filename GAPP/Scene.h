@@ -18,6 +18,8 @@ class TextureManager;
 class MeshManager;
 class Entity;
 class ObjManager;
+class BoundingVolumeManager;
+class Shader;
 class Scene {
 protected:
 	ENTT entityContainer{};
@@ -28,7 +30,10 @@ protected:
 	TextureManager* textureManager{};
 	MeshManager* meshManager{};
 	ObjManager* objManager{};
+	BoundingVolumeManager* bvManager{};
 	//IMGui manager
+
+	glm::mat4 WTC{};
 
 	ID makeEntity();
 
@@ -39,7 +44,7 @@ public:
 	virtual void Load() {};
 	virtual void Update(double /*dt*/);
 	//virtual void ImGUIUpdate() = 0;
-	virtual void Draw() {};
+	virtual void Draw();
 	virtual void Unload() {};
 
 	ENTT& getENTT();
@@ -47,4 +52,6 @@ public:
 	TextureManager* getTextureManager() { return textureManager; }
 	MeshManager* getMeshManager() {return meshManager;}
 	ObjManager* getObjManager() { return objManager; }
+	std::shared_ptr<Shader> get_DebugShader();
+	glm::mat4& get_WTC() { return WTC; }
 };

@@ -41,7 +41,7 @@ public:
 	int MeshID{};
 
 	glm::vec3 pos{};
-	glm::vec3 scale{1.};
+	glm::vec3 scale{1.f};
 	glm::vec3 rotate{};
 	glm::mat4 objectMatrix{};
 

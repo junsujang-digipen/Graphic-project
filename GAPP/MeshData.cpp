@@ -45,7 +45,6 @@ void MeshData::load()
 
 void MeshData::unload()
 {
-	delete boundingVolumeData;
 
 	Renderer renderer{};
 	renderer.deleteVertexArray(&vao);

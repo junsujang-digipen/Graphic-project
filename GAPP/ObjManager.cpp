@@ -13,6 +13,7 @@ End Header --------------------------------------------------------*/
 #include "ObjManager.h"
 #include "Scene.h"
 #include "EnttComponentStructures.h"
+#include "Entity.h"
 
 ObjManager::ObjManager(Scene* sc):scene(sc)
 {
@@ -26,10 +27,16 @@ ObjManager::~ObjManager()
 
 void ObjManager::update(double dt)
 {
+	for (auto& e:Objs) {
+		e.second->update(dt);
+	}
 }
 
 void ObjManager::draw()
 {
+	for (auto& e : Objs) {
+		e.second->draw();
+	}
 }
 
 std::shared_ptr<Entity> ObjManager::getObj(ID id)
@@ -42,8 +49,22 @@ void ObjManager::enrollObj(std::shared_ptr<Entity> obj, ID id)
 	Objs[id] = obj;
 }
 
-void ObjManager::SetMeshID(ID id, int MID)
+std::shared_ptr<Entity> ObjManager::GenObj()
 {
-	scene->getENTT().emplace<MeshID>(id,  MID);
+	ID id = scene->getENTT().create();
+	Objs[id] = std::make_shared<Entity>(scene, id);
+	return Objs[id];
+}
+
+
+void ObjManager::SetSceneComponent(ID id) {
+	scene->getENTT().emplace<PositionComponent>(id, PositionComponent());
+	scene->getENTT().emplace<ScaleComponent>(id, ScaleComponent());
+	scene->getENTT().emplace<RotateComponent>(id, RotateComponent{});
+	scene->getENTT().emplace<ObjectMatrixComponent>(id, ObjectMatrixComponent{});
+}
+void ObjManager::SetMeshID(ID /*id*/, int /*MID*/)
+{
+	//scene->getENTT().emplace<MeshID>(id,  MID);
 }
 

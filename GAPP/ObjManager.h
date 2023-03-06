@@ -27,6 +27,10 @@ public:
 
 
 	std::shared_ptr<Entity> getObj(ID id);
+	
 	void enrollObj(std::shared_ptr<Entity> obj , ID id);
+	std::shared_ptr<Entity> GenObj();
+
+	void SetSceneComponent(ID id);
 	void SetMeshID(ID id, int MeshID);
 };

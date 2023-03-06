@@ -13,6 +13,7 @@ End Header --------------------------------------------------------*/
 #include "OBJLoader.h"
 #include <sstream>
 #include <fstream>
+#include <limits.h>
 
 void OBJLoader::FileLoad(const char* path)
 {
@@ -24,7 +25,7 @@ void OBJLoader::FileLoad(const char* path)
 	}else{
 		std::cout << "File opened." << std::endl;
 		std::string text{};
-		glm::vec3 min{10000.f}, max{-10000.f};
+		glm::vec3 min{ FLT_MAX }, max{ FLT_MIN };
 		while (OBJFile >> text) {
 			if (text == "n") {
 				OBJFile >> meshName;

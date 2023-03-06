@@ -13,21 +13,9 @@ End Header --------------------------------------------------------*/
 #include <vector>
 #include "glm/glm.hpp"
 #include "Declare.h"
+#include "BoundingVolumeType.h"
 
-enum class BoundingVolumeType
-{
-	AABBBox,
-	Count
-};
-struct BoundingVolume
-{
-	BoundingVolume(BoundingVolumeType t):type(t) {}
-	BoundingVolumeType type{};
-};
-
-
-
-struct MeshData {
+struct MeshData { // TODO: Separate normal debug draw data later
 	std::vector<glm::vec3> VertexDatas{};
 	std::vector<glm::vec3> FaceNormalDatas{};
 	std::vector<glm::vec3> VertexNormalDatas{};
@@ -42,8 +30,6 @@ struct MeshData {
 
 	glm::vec3 boundBoxMax{ 1.f };
 	glm::vec3 boundBoxMin{ -1.f };
-
-	BoundingVolume* boundingVolumeData{};
 	
 	void load();
 	void unload();

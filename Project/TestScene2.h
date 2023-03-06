@@ -14,16 +14,14 @@ End Header --------------------------------------------------------*/
 #include <memory>
 #include <vector>
 #include "glm/glm.hpp"
-class Shader;
 class Entity;
 class Texture;
 class Camera;
 class RenderTextureCamera;
 class TestScene2 :public Scene {
 
-	glm::mat4 WTC{};
 	Camera* camera{};
-	std::shared_ptr<Shader> NormalShdrProgram{};
+	//std::shared_ptr<Shader> NormalShdrProgram{};
 	std::shared_ptr<Shader> LightShader{};
 	std::vector<std::shared_ptr<Entity>> Obj{};
 	std::vector<std::shared_ptr<Entity>> ObjSpheres{};

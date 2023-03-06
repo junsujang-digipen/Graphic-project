@@ -28,6 +28,11 @@ Entity::Entity(Scene* sc):scene(sc)
 Entity::Entity(Scene* sc, ID id):scene(sc), thisID(id)
 {
 	compoManager = std::make_shared<ComponentManager>(this);
+
+	/*getENTT().emplace<PositionComponent>(thisID, PositionComponent());
+	getENTT().emplace<ScaleComponent>(thisID, ScaleComponent());
+	getENTT().emplace<RotateComponent>(thisID, RotateComponent{});
+	getENTT().emplace<ObjectMatrixComponent>(thisID, ObjectMatrixComponent{});*/
 }
 
 ID Entity::getID()
@@ -49,23 +54,35 @@ void Entity::objMatrixUpdate()
 	const glm::mat4 rotate_z = glm::rotate(glm::mat4(1.0f), rotate.z, glm::vec3{ 0.f,0.f,1.f });
 	const glm::mat4 rotate_mat = rotate_x * rotate_y * rotate_z;
 	objectMatrix = Translate_mat * rotate_mat * scale_mat;
+	if (getENTT().any_of<ObjectMatrixComponent>(thisID)) {
+		getENTT().get<ObjectMatrixComponent>(thisID).objectMatrix = objectMatrix;
+	}
 }
 
 void Entity::setPos(const glm::vec3 &p)
 {
 	pos = p;
+	if (getENTT().any_of<PositionComponent>(thisID)) {
+		getENTT().get<PositionComponent>(thisID).pos = p;
+	}
 	shouldOBJMatrixUpdate = true;
 }
 
 void Entity::setScale(const glm::vec3 &s)
 {
 	scale = s;
+	if (getENTT().any_of<ScaleComponent>(thisID)) {
+		getENTT().get<ScaleComponent>(thisID).scale = s;
+	}
 	shouldOBJMatrixUpdate = true;
 }
 
 void Entity::setRotate(const glm::vec3 &r)
 {
 	rotate = r;
+	if (getENTT().any_of<RotateComponent>(thisID)) {
+		getENTT().get<RotateComponent>(thisID).rotate = r;
+	}
 	shouldOBJMatrixUpdate = true;
 }
 

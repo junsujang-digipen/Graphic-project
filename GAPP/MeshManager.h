@@ -11,9 +11,17 @@ Creation date: 02/26/2023
 End Header --------------------------------------------------------*/
 #pragma once
 #include "MeshData.h"
+#include "EnttComponentStructures.h"
+#include "BasicMeshType.h"
 
 class MeshManager {
 	std::vector<MeshData> Meshes{};
+
+	BoundingBox GenAABBBoundVolume(int i);
+	BoundingSphere GenRitterBoundVolume(int i);
+	BoundingSphere GenLarssonBoundVolume(int i);
+	BoundingSphere GenPCABoundVolume(int i);
+
 public:
 	MeshManager();
 	~MeshManager();
@@ -21,4 +29,7 @@ public:
 	int push_MeshData(MeshData& md);
 	const MeshData& getMeshData(int i);
 	MeshData& getMeshDataRef(int i);
+
+	BoundingBox make_BoundingBox(int i, BoundingVolumeType type = BoundingVolumeType::AABB);
+	BoundingSphere make_BoundingSphere(int i, BoundingVolumeType type = BoundingVolumeType::RITTER);
 };

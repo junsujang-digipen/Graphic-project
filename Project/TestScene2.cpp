@@ -38,6 +38,13 @@ End Header --------------------------------------------------------*/
 #include <Externals/include/GLFW/glfw3.h>
 #include <FSQ.h>
 #include <Imgui/imgui.h>
+#include <AssimpLoader.h>
+#include <glm/gtx/string_cast.hpp>
+#include <fstream>
+
+#include <BoundingVolumeManager.h>
+#include <ObjManager.h>
+#include <Input.h>
 
 TestScene2::TestScene2() : Scene(), SpCurrNum(1)
 {
@@ -48,10 +55,22 @@ TestScene2::~TestScene2() {
 
 void TestScene2::Load()
 {
+	// Setup ImGui context
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	// Setup Platform/Renderer bindings
+	ImGui::StyleColorsDark();
+	const char* glsl_version = "#version 460";
+	ImGui_ImplGlfw_InitForOpenGL(const_cast<GLFWwindow *>(engine->GetWindow()), true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
+
+
 	camera = {new Camera};
 	camera->init();
 	//camera->setPosition({ 0,130,150 });
-	camera->setPosition({ 0,0,150 });
+	camera->setPosition({ 0,40000,140000 });
 	//camera->setRotate({ glm::radians(-45.f),glm::radians(/*36.f*/0.f),0.f });
 	camera->Update(0.01);
 	WTC = { camera->getWorldToCameraToNDC() };
@@ -59,8 +78,6 @@ void TestScene2::Load()
 
 	const std::string Vshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/C_DiffuseShader.vert") };
 	const std::string Fshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/C_DiffuseShader.frag") };
-	const std::string VshdrNormal{ ShaderHelper::getShaderSourceFromFile("../Shaders/C_BasicShader.vert") };
-	const std::string FshdrNormal{ ShaderHelper::getShaderSourceFromFile("../Shaders/C_BasicShader.frag") };
 	
 	//Geometry stage shdr
 	const std::string vGeometryStageshdr{ ShaderHelper::getShaderSourceFromFile("../Shaders/F_GeometryStageShader.vert") };
@@ -128,17 +145,6 @@ void TestScene2::Load()
 		shaderManager->getShader("Lighting stage Shader")->linkProgram();
 	}
 	
-	//shader normal
-	NormalShdrProgram = shaderManager->makeShader("Normal Shader");
-	{
-		GLuint vshdr = NormalShdrProgram->compileShader(ShaderType::VERTEX_SHADER, { VshdrNormal });
-		GLuint fshdr = NormalShdrProgram->compileShader(ShaderType::FRAGMENT_SHADER, { FshdrNormal });
-		NormalShdrProgram->attachShader(vshdr);
-		NormalShdrProgram->attachShader(fshdr);
-		NormalShdrProgram->linkProgram();
-		NormalShdrProgram->sendUniformMatrix4fv("WorldToCameraMat", WTC);
-	}
-	
 	//light shader 
 	LightShader = shaderManager->makeShader("Light source Shader");
 	{
@@ -149,23 +155,66 @@ void TestScene2::Load()
 		LightShader->linkProgram();
 		LightShader->sendUniformMatrix4fv("WorldToCameraMat", WTC);
 	}
+	
+	//normal shader 
+	const std::string VshdrNormal{ ShaderHelper::getShaderSourceFromFile("../Shaders/C_BasicShader.vert") };
+	const std::string FshdrNormal{ ShaderHelper::getShaderSourceFromFile("../Shaders/C_BasicShader.frag") };
+	shaderManager->makeShader("Normal Shader");
+	{
+		GLuint vshdr = shaderManager->getShader("Normal Shader")->compileShader(ShaderType::VERTEX_SHADER, { VshdrNormal });
+		GLuint fshdr = shaderManager->getShader("Normal Shader")->compileShader(ShaderType::FRAGMENT_SHADER, { FshdrNormal });
+		shaderManager->getShader("Normal Shader")->attachShader(vshdr);
+		shaderManager->getShader("Normal Shader")->attachShader(fshdr);
+		shaderManager->getShader("Normal Shader")->linkProgram();
+	}
+
+	{//scene set up 
+		for (int n = 4; n <5; ++n) {
+			std::ifstream file{ "../Objects/Section" + std::to_string(n) + ".txt", std::ios::in };
+			if (!file) {
+				std::cout << "Unable to open file: " << "../Objects/Section" + std::to_string(n) + ".txt" << "\n";
+				exit(EXIT_FAILURE);
+			}
+			else {
+				std::cout << "File opened." << std::endl;
+				std::string text{};
+				while (file >> text) {
+					std::shared_ptr<Entity> temp = objManager->GenObj();
+					objManager->SetSceneComponent(temp->getID());
+					temp->setScale(glm::vec3(1.f));
+					AssimpLoader assimp{};
+					assimp.LoadModel("../Objects/" + text);
+					MeshData tempMD{ assimp.MakeMeshData(temp->getScale()) };
+					temp->MeshID = meshManager->push_MeshData(tempMD);
+					entityContainer.emplace<BoundingBox>(temp->getID(), meshManager->make_BoundingBox(temp->MeshID));
+					entityContainer.emplace<BoundingSphere>(temp->getID(), meshManager->make_BoundingSphere(temp->MeshID));
+					temp->objShader = shaderManager->getShader("Geometry stage Shader");
+					temp->normalVectorShader = shaderManager->getShader("Normal Shader");
+				}
+			}
+		}
+	}
+
 	//Obj load
 	{
 		const char* filepaths[5]{
 			"./4Sphere.obj" ,
 			"./bunny_high_poly.obj" ,
-			"./cube2.obj" ,
+			"../Objects/cube2.obj" ,
 			"./sphere.obj" ,
 			"./sphere_modified.obj" };
 		for (int i = 0; i < 5; ++i) {
 			Obj.push_back(std::make_shared<BasicObject>(this));
+
+			Obj[i]->setScale(glm::vec3(10000.f));
 			OBJLoader objLoader{};
 			objLoader.FileLoad(filepaths[i]);
 			MeshData tempMD{ objLoader.makeMeshData(Obj[i]->getScale()) };
+
 			Obj[i]->MeshID = meshManager->push_MeshData(tempMD);
-			Obj[i]->setScale(glm::vec3(50.f));
 			Obj[i]->objShader = shaderManager->getShader("Geometry stage Shader");
-			Obj[i]->normalVectorShader = NormalShdrProgram;
+			Obj[i]->normalVectorShader = shaderManager->getShader("Normal Shader");
+
 		}
 
 		{//texture
@@ -190,35 +239,37 @@ void TestScene2::Load()
 		MakeCircleLineData(100, Temp.VertexDatas, Temp.VertexNormalDatas, Temp.FaceNormalDatas, Temp.idxDatas);
 		Temp.primitive_type = GL_LINES;
 		ObjCircleLine->setPos(glm::vec3(0.f, 0.f, 0.f));
-		ObjCircleLine->setScale(glm::vec3(200.f));
+		ObjCircleLine->setScale(glm::vec3(100000.f));
 
-		MeshData tempMD{ Temp.makeMeshData(ObjCircleLine->getScale()) };
+		MeshData tempMD{ Temp.makeMeshData(glm::vec3{100.f}) };
 		ObjCircleLine->MeshID = meshManager->push_MeshData(tempMD);
 
 		ObjCircleLine->objShader = LightShader;
-		ObjCircleLine->normalVectorShader = NormalShdrProgram;
+		ObjCircleLine->normalVectorShader = shaderManager->getShader("Normal Shader");
 	}
 	//sphere
 	{
 		const int SpMax{ 16 };
-		OBJLoader Temp{};
-		MakeSphereData(20, 20, Temp.VertexDatas, Temp.VertexNormalDatas, Temp.FaceNormalDatas, Temp.idxDatas);
-		MeshData tempMD{ Temp.makeMeshData(ObjCircleLine->getScale()) };
-		int tempMeshID{ meshManager->push_MeshData(tempMD) };
+		//OBJLoader Temp{};
+		//MakeSphereData(20, 20, Temp.VertexDatas, Temp.VertexNormalDatas, Temp.FaceNormalDatas, Temp.idxDatas);
+		//MeshData tempMD{ Temp.makeMeshData(glm::vec3(10.f)) };
+		//int tempMeshID{ meshManager->push_MeshData(tempMD) };
+		int tempMeshID{ Cast<int>(BasicMeshType::Sphere)};
 		for (int i = 0; i < SpMax; ++i) {
 			ObjSpheres.push_back(std::make_shared<Light>(this));
 			float now = (float)i / SpMax;
 			float alpha = now * 3.14f * 2.f;
 			glm::vec3 pos = glm::vec3{ ObjCircleLine->scale.x / 2.f * sin(alpha),0.f,ObjCircleLine->scale.x / 2.f * cos(alpha) };
 			ObjSpheres[i]->setPos(pos);
-			ObjSpheres[i]->setScale(glm::vec3(10.f));
+			ObjSpheres[i]->setScale(glm::vec3(5000.f));
 			ObjSpheres[i]->MeshID = tempMeshID;
 			std::string lightLniformName{ "lightSources[" + std::to_string(i) + ("]") };
 			dynamic_cast<Light*>(ObjSpheres[i].get())->sendLightDataUniform(shaderManager->getShader("Lighting stage Shader"), lightLniformName);
 			ObjSpheres[i]->objShader = LightShader;
-			ObjSpheres[i]->normalVectorShader = NormalShdrProgram;
+			ObjSpheres[i]->normalVectorShader = shaderManager->getShader("Normal Shader");
 
 		}
+		dynamic_cast<Light*>(ObjSpheres[0].get())->refLightData().type = 0;
 	}
 }
 
@@ -282,12 +333,10 @@ void TestScene2::Update(double dt)
 				static glm::vec3 fogCol{ 0.f,0.f,0.f };
 				ImGui::SliderFloat3(std::string("Fog color").c_str(), &fogCol.r, 0.0f, 1.f);
 				shaderManager->getShader("Lighting stage Shader")->sendUniform3fv("fogCol", fogCol);
-				static float fogNear{ 0.1f };
-				static float fogFar{ 1000.f };
-				ImGui::SliderFloat(std::string("Fog near").c_str(), &fogNear, 0.f, fogFar);
-				shaderManager->getShader("Lighting stage Shader")->sendUniform1fv("cameraNear", fogNear);
-				ImGui::SliderFloat(std::string("Fog far").c_str(), &fogFar, fogNear, 1000.f);
-				shaderManager->getShader("Lighting stage Shader")->sendUniform1fv("cameraFar", fogFar);
+				ImGui::SliderFloat(std::string("Fog near").c_str(), &camera->getNear(), 0.f, camera->getFar());
+				shaderManager->getShader("Lighting stage Shader")->sendUniform1fv("cameraNear", camera->getNear());
+				ImGui::SliderFloat(std::string("Fog far").c_str(), &camera->getFar(), camera->getNear(), 500000.f);
+				shaderManager->getShader("Lighting stage Shader")->sendUniform1fv("cameraFar", camera->getFar());
 			}
 
 			static glm::vec3 GAmbient{ 0.0f,0.0f,0.0f };
@@ -348,14 +397,15 @@ void TestScene2::Update(double dt)
 	}
 	if (ImGui::CollapsingHeader("Obj control")) {
 		ImGui::SliderInt("Normal", &normalDrawState, 0, 3);
-		ImGui::SliderInt("OBJ Number", &nowObj, 0, 4);
+		int objSize{ (int)Obj.size() -1};
+		ImGui::SliderInt("OBJ Number", &nowObj, 0, objSize);
 		ImGui::SliderFloat("OBJ rotate", &ObjRotate, 0.f, 6.28f);
 	}
 	 
 	if (ImGui::CollapsingHeader("Camera control")) {
 		static glm::vec3 cameraPosition{ camera->getCameraPos() };
 		static glm::vec3 HSV_Value{ 128.f,128.f,128.f };
-		ImGui::SliderFloat3("Camera position ", &cameraPosition.x, -1000.f, 1000.f);
+		ImGui::SliderFloat3("Camera position ", &cameraPosition.x, -1000000.f, 1000000.f);
 		camera->setPosition(cameraPosition);
 		shaderManager->getShader("Lighting stage Shader")->sendUniform3fv("cameraPos", cameraPosition);
 		shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("cameraPos", camera->getCameraPos());
@@ -365,12 +415,6 @@ void TestScene2::Update(double dt)
 		ImGui::SliderFloat("Camera Yaw rotate", &cameraRotation.y, -3.14f, 3.14f);
 		//ImGui::SliderFloat("Camera Roll rotate", &cameraRotation.z, -3.14f, 3.14f);
 		camera->updateRotate(cameraRotation - camera->getAngle());
-		camera->Update(0.01);
-		WTC = camera->getWorldToCameraToNDC();
-		shaderManager->getShader("Geometry stage Shader")->sendUniformMatrix4fv("WorldToCameraMat", WTC);
-		NormalShdrProgram->sendUniformMatrix4fv("WorldToCameraMat", WTC);
-		LightShader->sendUniformMatrix4fv("WorldToCameraMat", WTC);
-
 	}
 	if (ImGui::CollapsingHeader("Gbuffer")) {
 		ImGui::Checkbox("Should depth copy", &shouldDepthCopy);
@@ -386,8 +430,8 @@ void TestScene2::Update(double dt)
 		ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(m_textures[4])), { 400,300 }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 		ImGui::Text("Gbuffer emissive");
 		ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(m_textures[5])), { 400,300 }, ImVec2{ 0,1 }, ImVec2{ 1,0 });
-		ImGui::Text("Gbuffer depth");
-		ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(m_depthTexture)), { 400,300}, ImVec2{ 0,1 }, ImVec2{ 1,0 });
+		//ImGui::Text("Gbuffer depth");
+		//ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(m_depthTexture)), { 400,300}, ImVec2{ 0,1 }, ImVec2{ 1,0 });
 	}
 	if (ImGui::CollapsingHeader("Light control")) {
 		ImGui::SliderFloat("Orbit speed", &orbitSpeed, 0.f, 2.f);
@@ -464,34 +508,40 @@ void TestScene2::Update(double dt)
 			}
 		}
 	}
+	if (ImGui::CollapsingHeader("Bounding Volume control")) {
+		ImGui::Checkbox("Bounding Sphere draw on off", &bvManager->ShouldDrawBoundingSphere);
+		ImGui::Checkbox("Bounding Box draw on off", &bvManager->ShouldDrawBoundingBox);
+	}
 	if (ImGui::BeginMainMenuBar())
 	{
 		//camera control
-		
-		float moveSpeed{ 100.f * static_cast<float>(dt) };
-		if (ImGui::IsKeyDown(ImGuiKey_::ImGuiKey_LeftShift) == true) {
+		Keyboard kb{};
+		float moveSpeed{ 1000.f * static_cast<float>(dt) };
+		if (kb.IsKeyDown(GLFW_KEY_LEFT_SHIFT) == true) {
 			camera->setPosition(camera->getCameraPos() - glm::vec3{ 0,1,0 } *moveSpeed);
 		}
-		if (ImGui::IsKeyDown(ImGuiKey_::ImGuiKey_Space) == true) {
+		
+		if (kb.IsKeyDown(GLFW_KEY_SPACE) == true) {
 			camera->setPosition(camera->getCameraPos() + glm::vec3{ 0,1,0 } *moveSpeed);
 		}
-		if (ImGui::IsKeyDown(ImGuiKey_::ImGuiKey_W) == true) {
+		if (kb.IsKeyDown(GLFW_KEY_W) == true) {
 			camera->setPosition(camera->getCameraPos() + camera->getViewDirec() * moveSpeed);
 		}
-		if (ImGui::IsKeyDown(ImGuiKey_::ImGuiKey_S) == true) {
+		if (kb.IsKeyDown(GLFW_KEY_S) == true) {
 			camera->setPosition(camera->getCameraPos() - camera->getViewDirec() * moveSpeed);
 		}
-		if (ImGui::IsKeyDown(ImGuiKey_::ImGuiKey_D) == true) {
+		if (kb.IsKeyDown(GLFW_KEY_D) == true) {
 			camera->setPosition(camera->getCameraPos() + camera->getRightDirec() * moveSpeed);
-		}if (ImGui::IsKeyDown(ImGuiKey_::ImGuiKey_A) == true) {
+		}if (kb.IsKeyDown(GLFW_KEY_A) == true) {
 			camera->setPosition(camera->getCameraPos() - camera->getRightDirec() * moveSpeed);
 		}
-		camera->Update(0.01);
-		shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("cameraPos", camera->getCameraPos());
-		shaderManager->getShader("Lighting stage Shader")->sendUniform3fv("cameraPos", camera->getCameraPos());
-		shaderManager->getShader("Geometry stage Shader")->sendUniformMatrix4fv("WorldToCameraMat", WTC);
-		NormalShdrProgram->sendUniformMatrix4fv("WorldToCameraMat", WTC);
-		LightShader->sendUniformMatrix4fv("WorldToCameraMat", WTC);
+		float CameraAngleSpeed{ static_cast<float>(dt)/20.f };
+		if (kb.IsKeyDown(GLFW_KEY_Q) == true) {
+			camera->updateRotate(-glm::vec3{0.f,CameraAngleSpeed,0.f});
+		}
+		if (kb.IsKeyDown(GLFW_KEY_E) == true) {
+			camera->updateRotate(glm::vec3{ 0.f,CameraAngleSpeed,0.f });
+		}
 		ImGui::EndMainMenuBar();
 	}
 
@@ -504,12 +554,23 @@ void TestScene2::Update(double dt)
 	}
 	Obj[nowObj]->setRotate({ 0.f,ObjRotate,0.f });
 	Obj[nowObj]->update(dt);
+	//entityContainer.get<ObjectMatrixComponent>(Obj[nowObj]->getID()).objectMatrix;
 	ObjCircleLine->update(dt);
 	screenRect->update(dt);
+	camera->Update(dt);
+	WTC = camera->getWorldToCameraToNDC();
+	shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("cameraPos", camera->getCameraPos());
+	shaderManager->getShader("Lighting stage Shader")->sendUniform3fv("cameraPos", camera->getCameraPos());
+	shaderManager->getShader("Lighting stage Shader")->sendUniform1fv("cameraNear", camera->getNear());
+	shaderManager->getShader("Lighting stage Shader")->sendUniform1fv("cameraFar", camera->getFar());
+	shaderManager->getShader("Geometry stage Shader")->sendUniformMatrix4fv("WorldToCameraMat", WTC);
+	shaderManager->getShader("Normal Shader")->sendUniformMatrix4fv("WorldToCameraMat", WTC);
+	LightShader->sendUniformMatrix4fv("WorldToCameraMat", WTC);
 }
 
 void TestScene2::Draw()
 {
+	
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LESS);
@@ -539,7 +600,7 @@ void TestScene2::Draw()
 		shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("boundMax", meshManager->getMeshData(Obj[nowObj]->MeshID).boundBoxMax);
 		shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("boundMin", meshManager->getMeshData(Obj[nowObj]->MeshID).boundBoxMin);
 		Obj[nowObj]->draw();
-
+		objManager->draw();
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	}
 
@@ -578,7 +639,7 @@ void TestScene2::Draw()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	{//forward shading
-		NormalShdrProgram->sendUniformMatrix4fv("WorldToCameraMat", WTC);
+		shaderManager->getShader("Normal Shader")->sendUniformMatrix4fv("WorldToCameraMat", WTC);
 		LightShader->sendUniformMatrix4fv("WorldToCameraMat", WTC);
 
 		if (normalDrawState != 0) {
@@ -595,7 +656,52 @@ void TestScene2::Draw()
 				ObjSpheres[i]->drawNormal(normalDrawState);
 			}
 		}	
-		
+		//Scene::Draw();
+		bvManager->Draw();
+		//{
+		//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//	glLineWidth(0.5f);
+		//	get_DebugShader().get()->sendUniformMatrix4fv("WorldToCameraMat", WTC);
+		//	ENTT& reg = getENTT();
+		//	{
+		//		auto v = reg.view<ObjectMatrixComponent, BoundingBox>();
+		//		ID e = Obj[nowObj]->getID();
+		//		//for (auto& e : v) 
+		//		{
+		//			const glm::mat4 Translate_mat = glm::translate(glm::mat4(1.0f), v.get<BoundingBox>(e).Center);
+		//			const glm::mat4 scale_mat = glm::scale(glm::mat4(1.0f), v.get<BoundingBox>(e).HalfExtend);
+		//			//ObjectMatrixComponent& t = v.get<ObjectMatrixComponent>(e);
+		//			const glm::mat4 Matrix = v.get<ObjectMatrixComponent>(e).objectMatrix * Translate_mat * scale_mat;
+		//			const MeshData& temp = getMeshManager()->getMeshData(v.get<BoundingBox>(e).DebugMeshID);
+		//			get_DebugShader().get()->sendUniformMatrix4fv("modelToWorldMat", Matrix);
+		//			get_DebugShader().get()->useProgram();
+		//			glBindVertexArray(temp.vao);
+		//			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, temp.ibo);
+		//			glDrawElements(temp.primitive_type, static_cast<GLsizei>(temp.idxDatas.size()), GL_UNSIGNED_INT, nullptr);
+		//			get_DebugShader().get()->unuseProgram();
+		//		}
+		//	
+		//	}
+			//auto g = getENTT().view<ObjectMatrixComponent, BoundingSphere>();
+			//std::cout <<std::endl;
+			////for (auto& e : g) 
+			//{
+			//	ID e = Obj[nowObj]->getID();
+			//	const glm::mat4 Translate_mat = glm::translate(glm::mat4(1.0f), getENTT().get<BoundingSphere>(e).Center);
+			//	const glm::mat4 scale_mat = glm::scale(glm::mat4(1.0f), glm::vec3(getENTT().get<BoundingSphere>(e).radius*2.f));
+			//	const glm::mat4 Matrix = getENTT().get<ObjectMatrixComponent>(e).objectMatrix * Translate_mat * scale_mat;
+			//	//std::cout << glm::to_string(g.get<ObjectMatrixComponent>(e).objectMatrix)<<std::endl;
+			//	const MeshData& temp = getMeshManager()->getMeshData(getENTT().get<BoundingSphere>(e).DebugMeshID);
+			//	get_DebugShader().get()->sendUniformMatrix4fv("modelToWorldMat", Matrix);
+			//	get_DebugShader().get()->useProgram();
+			//	glBindVertexArray(temp.vao);
+			//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, temp.ibo);
+			//	glDrawElements(temp.primitive_type, static_cast<GLsizei>(temp.idxDatas.size()), GL_UNSIGNED_INT, nullptr);
+			//	get_DebugShader().get()->unuseProgram();
+			//}
+			////std::cout << std::endl;
+			//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			//}
 	}
 
 	ImGui::Render();
@@ -609,4 +715,9 @@ void TestScene2::Unload()
 
 	ObjSpheres.clear();
 
+	{
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
+	}
 }

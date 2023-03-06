@@ -29,7 +29,7 @@ class Camera {
 	float width{ 1200.f };
 	float ar{ width / height };
 	float near{ 0.1f };
-	float far{ 1000.f };
+	float far{ 200000.f };
 	float distance{ (near + far) * 0.5f };
 
 	bool isMove{ true };

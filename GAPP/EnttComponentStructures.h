@@ -11,6 +11,33 @@ Creation date: 02/28/2023
 End Header --------------------------------------------------------*/
 #pragma once
 
-struct MeshID {
-	int id{};
+//struct MeshID {
+//	int id{};
+//};
+//struct Model {
+//	
+//};
+struct BoundingBox {
+	glm::vec3 Center{};
+	glm::vec3 HalfExtend{};
+	int DebugMeshID{};
+};
+
+struct BoundingSphere {
+	glm::vec3 Center{};
+	float radius{};
+	int DebugMeshID{};
+};
+
+struct PositionComponent {
+	glm::vec3 pos{0.f};
+};
+struct ScaleComponent {
+	glm::vec3 scale{ 1. };
+};
+struct RotateComponent {
+	glm::vec3 rotate{0.f};
+};
+struct ObjectMatrixComponent {
+	glm::mat4 objectMatrix{1.f};
 };
