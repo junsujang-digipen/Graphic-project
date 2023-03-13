@@ -5,7 +5,7 @@ File Name: TestScene2.cpp
 Purpose: Scene for testing objs and loader and shaders
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
+Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 11/22/2022
 End Header --------------------------------------------------------*/
@@ -193,6 +193,8 @@ void TestScene2::Load()
 				}
 			}
 		}
+
+		bvManager->calcHierarchy();
 	}
 
 	//Obj load
@@ -403,17 +405,8 @@ void TestScene2::Update(double dt)
 	}
 	 
 	if (ImGui::CollapsingHeader("Camera control")) {
-		static glm::vec3 cameraPosition{ camera->getCameraPos() };
-		static glm::vec3 HSV_Value{ 128.f,128.f,128.f };
-		ImGui::SliderFloat3("Camera position ", &cameraPosition.x, -1000000.f, 1000000.f);
-		camera->setPosition(cameraPosition);
-		shaderManager->getShader("Lighting stage Shader")->sendUniform3fv("cameraPos", cameraPosition);
-		shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("cameraPos", camera->getCameraPos());
-
 		static glm::vec3 cameraRotation{ camera->getAngle() };
-		ImGui::SliderFloat("Camera Pitch rotate ", &cameraRotation.x, -1.57f, 1.57f);
 		ImGui::SliderFloat("Camera Yaw rotate", &cameraRotation.y, -3.14f, 3.14f);
-		//ImGui::SliderFloat("Camera Roll rotate", &cameraRotation.z, -3.14f, 3.14f);
 		camera->updateRotate(cameraRotation - camera->getAngle());
 	}
 	if (ImGui::CollapsingHeader("Gbuffer")) {
@@ -509,8 +502,23 @@ void TestScene2::Update(double dt)
 		}
 	}
 	if (ImGui::CollapsingHeader("Bounding Volume control")) {
+		if (ImGui::Button("Calculate Ritter's bounding sphere")) {
+			objManager->NewBoundingSphere(BoundingVolumeType::RITTER);
+		}
+		if (ImGui::Button("Calculate Larsson's bounding sphere")) {
+			objManager->NewBoundingSphere(BoundingVolumeType::LARSSON);
+		}
+		if (ImGui::Button("Calculate PCA-based bounding sphere")) {
+			objManager->NewBoundingSphere(BoundingVolumeType::PCA);
+		}
 		ImGui::Checkbox("Bounding Sphere draw on off", &bvManager->ShouldDrawBoundingSphere);
 		ImGui::Checkbox("Bounding Box draw on off", &bvManager->ShouldDrawBoundingBox);
+		ImGui::Checkbox("Bottom_Up Bounding Box Hierarchy draw on off", &bvManager->ShouldDraw_BU_BoundingBoxHierarchy);
+		ImGui::Checkbox("Bottom_Up Bounding Sphere Hierarchy draw on off", &bvManager->ShouldDraw_BU_BoundingSphereHierarchy);
+		ImGui::Checkbox("Top_Down Bounding Box Hierarchy draw on off", &bvManager->ShouldDraw_TD_BoundingBoxHierarchy);
+		ImGui::Checkbox("Top_Down Bounding Sphere Hierarchy draw on off", &bvManager->ShouldDraw_TD_BoundingSphereHierarchy);
+		ImGui::Checkbox("Draw all level", &bvManager->DrawAllLevel);
+		ImGui::SliderInt("Draw level", &bvManager->DrawLevel, 0, 20);
 	}
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -658,50 +666,6 @@ void TestScene2::Draw()
 		}	
 		//Scene::Draw();
 		bvManager->Draw();
-		//{
-		//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		//	glLineWidth(0.5f);
-		//	get_DebugShader().get()->sendUniformMatrix4fv("WorldToCameraMat", WTC);
-		//	ENTT& reg = getENTT();
-		//	{
-		//		auto v = reg.view<ObjectMatrixComponent, BoundingBox>();
-		//		ID e = Obj[nowObj]->getID();
-		//		//for (auto& e : v) 
-		//		{
-		//			const glm::mat4 Translate_mat = glm::translate(glm::mat4(1.0f), v.get<BoundingBox>(e).Center);
-		//			const glm::mat4 scale_mat = glm::scale(glm::mat4(1.0f), v.get<BoundingBox>(e).HalfExtend);
-		//			//ObjectMatrixComponent& t = v.get<ObjectMatrixComponent>(e);
-		//			const glm::mat4 Matrix = v.get<ObjectMatrixComponent>(e).objectMatrix * Translate_mat * scale_mat;
-		//			const MeshData& temp = getMeshManager()->getMeshData(v.get<BoundingBox>(e).DebugMeshID);
-		//			get_DebugShader().get()->sendUniformMatrix4fv("modelToWorldMat", Matrix);
-		//			get_DebugShader().get()->useProgram();
-		//			glBindVertexArray(temp.vao);
-		//			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, temp.ibo);
-		//			glDrawElements(temp.primitive_type, static_cast<GLsizei>(temp.idxDatas.size()), GL_UNSIGNED_INT, nullptr);
-		//			get_DebugShader().get()->unuseProgram();
-		//		}
-		//	
-		//	}
-			//auto g = getENTT().view<ObjectMatrixComponent, BoundingSphere>();
-			//std::cout <<std::endl;
-			////for (auto& e : g) 
-			//{
-			//	ID e = Obj[nowObj]->getID();
-			//	const glm::mat4 Translate_mat = glm::translate(glm::mat4(1.0f), getENTT().get<BoundingSphere>(e).Center);
-			//	const glm::mat4 scale_mat = glm::scale(glm::mat4(1.0f), glm::vec3(getENTT().get<BoundingSphere>(e).radius*2.f));
-			//	const glm::mat4 Matrix = getENTT().get<ObjectMatrixComponent>(e).objectMatrix * Translate_mat * scale_mat;
-			//	//std::cout << glm::to_string(g.get<ObjectMatrixComponent>(e).objectMatrix)<<std::endl;
-			//	const MeshData& temp = getMeshManager()->getMeshData(getENTT().get<BoundingSphere>(e).DebugMeshID);
-			//	get_DebugShader().get()->sendUniformMatrix4fv("modelToWorldMat", Matrix);
-			//	get_DebugShader().get()->useProgram();
-			//	glBindVertexArray(temp.vao);
-			//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, temp.ibo);
-			//	glDrawElements(temp.primitive_type, static_cast<GLsizei>(temp.idxDatas.size()), GL_UNSIGNED_INT, nullptr);
-			//	get_DebugShader().get()->unuseProgram();
-			//}
-			////std::cout << std::endl;
-			//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			//}
 	}
 
 	ImGui::Render();

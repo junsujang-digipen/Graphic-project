@@ -5,12 +5,14 @@ File Name: UsingEntt.h
 Purpose: Using entt and some declarations
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
+Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 02/02/2023
 End Header --------------------------------------------------------*/
 #pragma once
+#pragma warning(disable: 4819)
 #include "entt/entt.hpp"
 
 using ID = entt::entity;
 using ENTT = entt::registry;
+

@@ -5,7 +5,7 @@ File Name: MeshManager.h
 Purpose: For load obj file
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
+Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 02/26/2023
 End Header --------------------------------------------------------*/
@@ -33,3 +33,5 @@ public:
 	BoundingBox make_BoundingBox(int i, BoundingVolumeType type = BoundingVolumeType::AABB);
 	BoundingSphere make_BoundingSphere(int i, BoundingVolumeType type = BoundingVolumeType::RITTER);
 };
+
+void CircleGrow(glm::vec3& center, float& radius, std::vector<glm::vec3>& extremePoints);

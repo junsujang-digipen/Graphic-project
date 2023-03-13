@@ -5,7 +5,7 @@ File Name: Shader.h
 Purpose: For compile and linking shaders
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
+Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/29/2022
 End Header --------------------------------------------------------*/
@@ -45,6 +45,7 @@ public:
 	void sendUniform1iv(const GLchar* name, const int& data);
 	void sendUniform1fv(const GLchar* name, const float& data);
 	void sendUniform3fv(const GLchar* name, const glm::vec3& data);
+	void sendUniform4fv(const GLchar* name, const glm::vec4& data);
 	void sendUniformMatrix4fv(const GLchar* name, const glm::mat4& data);
 	void sendUniformMatrix3fv(const GLchar* name, const glm::mat3& data);
 

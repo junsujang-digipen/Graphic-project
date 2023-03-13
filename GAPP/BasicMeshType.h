@@ -5,7 +5,7 @@ File Name: BasicMeshType.h
 Purpose: For load obj file
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
+Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 03/03/2023
 End Header --------------------------------------------------------*/
@@ -20,7 +20,7 @@ enum class  BasicMeshType:int
 
 };
 
-template<typename T>
+template<typename T = int>
 inline T Cast(BasicMeshType type) {
 	return static_cast<T>(type);
 }

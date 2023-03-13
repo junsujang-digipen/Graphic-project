@@ -5,7 +5,7 @@ File Name: Camera.cpp
 Purpose: Camera matrix functions
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
+Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/28/2022
 End Header --------------------------------------------------------*/

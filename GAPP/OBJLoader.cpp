@@ -5,7 +5,7 @@ File Name: OBJLoader.cpp
 Purpose: For load obj file
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
+Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/29/2022
 End Header --------------------------------------------------------*/
@@ -25,7 +25,7 @@ void OBJLoader::FileLoad(const char* path)
 	}else{
 		std::cout << "File opened." << std::endl;
 		std::string text{};
-		glm::vec3 min{ FLT_MAX }, max{ FLT_MIN };
+		glm::vec3 min{ FLT_MAX }, max{ -FLT_MAX };
 		while (OBJFile >> text) {
 			if (text == "n") {
 				OBJFile >> meshName;

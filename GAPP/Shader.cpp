@@ -5,7 +5,7 @@ File Name: Shader.cpp
 Purpose: For compile and linking shaders
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
+Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/29/2022
 End Header --------------------------------------------------------*/
@@ -178,6 +178,20 @@ void Shader::sendUniform3fv(const GLchar* name, const glm::vec3& data)
 	else {
 		std::cout << ShaderFileName << " error: " << std::endl;
 
+		std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
+	}
+	unuseProgram();
+}
+
+void Shader::sendUniform4fv(const GLchar* name, const glm::vec4& data)
+{
+	useProgram();
+	GLint loc = glGetUniformLocation(shdrProgram, name);
+	if (loc >= 0) {
+		glUniform4fv(loc, 1, &data.x);
+	}
+	else {
+		std::cout << ShaderFileName << " error: " << std::endl;
 		std::cout << "Uniform variable " << name << " doesn't exist" << std::endl;
 	}
 	unuseProgram();

@@ -5,7 +5,7 @@ File Name: ObjManager.h
 Purpose: For storing Entity datas
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
+Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 02/28/2023
 End Header --------------------------------------------------------*/
@@ -13,6 +13,8 @@ End Header --------------------------------------------------------*/
 #include <map>
 #include <memory>
 #include "UsingEntt.h"
+#include "BoundingVolumeType.h"
+
 class Scene;
 class Entity;
 class ObjManager {
@@ -33,4 +35,5 @@ public:
 
 	void SetSceneComponent(ID id);
 	void SetMeshID(ID id, int MeshID);
+	void NewBoundingSphere(BoundingVolumeType newType);
 };

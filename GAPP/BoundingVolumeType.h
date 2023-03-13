@@ -5,7 +5,7 @@ File Name: BoundingVolumeType.h
 Purpose: For storing Entity datas
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 1 - Hybrid Rendering
+Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 03/03/2023
 End Header --------------------------------------------------------*/
