@@ -5,7 +5,7 @@ File Name: BoundingVolumeManager.cpp
 Purpose: Bounding volume management and generate hierarchy
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
+Project: junsu.jang, CS350, Assignment 3 - Spatial Partitioning
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 03/04/2023
 End Header --------------------------------------------------------*/
@@ -26,6 +26,11 @@ End Header --------------------------------------------------------*/
 BoundingVolumeManager::BoundingVolumeManager(Scene* sc):scene(sc)
 {
  
+}
+
+BoundingVolumeManager::~BoundingVolumeManager()
+{
+	hierarchyContainer.clear();
 }
 
 void BoundingVolumeManager::Update(double /*dt*/)

@@ -134,6 +134,7 @@
     <ClInclude Include="FSQ.h" />
     <ClInclude Include="GAPP.h" />
     <ClInclude Include="Input.h" />
+    <ClInclude Include="IntersectTest.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="MeshData.h" />
@@ -149,6 +150,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="SkyBox.h" />
+    <ClInclude Include="SpatialManager.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="UsingEntt.h" />
@@ -164,6 +166,7 @@
     <ClCompile Include="FSQ.cpp" />
     <ClCompile Include="GAPP.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="IntersectTest.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="MAterial.cpp" />
     <ClCompile Include="MeshData.cpp" />
@@ -181,6 +184,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="SkyBox.cpp" />
+    <ClCompile Include="SpatialManager.cpp" />
     <ClCompile Include="stb_imple.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureManager.cpp" />

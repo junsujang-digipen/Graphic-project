@@ -5,7 +5,7 @@ File Name: ObjManager.cpp
 Purpose: For storing Entity datas
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
+Project: junsu.jang, CS350, Assignment 3 - Spatial Partitioning
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 02/28/2023
 End Header --------------------------------------------------------*/
@@ -64,9 +64,10 @@ void ObjManager::SetSceneComponent(ID id) {
 	scene->getENTT().emplace<RotateComponent>(id, RotateComponent{});
 	scene->getENTT().emplace<ObjectMatrixComponent>(id, ObjectMatrixComponent{});
 }
-void ObjManager::SetMeshID(ID /*id*/, int /*MID*/)
+void ObjManager::SetMeshID(ID id, int MID)
 {
-	//scene->getENTT().emplace<MeshID>(id,  MID);
+	getObj(id)->MeshID = MID;
+	scene->getENTT().emplace<MeshIDComponent>(id,  MID);
 }
 
 void ObjManager::NewBoundingSphere(BoundingVolumeType newType) {

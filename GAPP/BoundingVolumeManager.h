@@ -5,7 +5,7 @@ File Name: BoundingVolumeManager.h
 Purpose: Bounding volume management and generate hierarchy
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
+Project: junsu.jang, CS350, Assignment 3 - Spatial Partitioning
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 03/04/2023
 End Header --------------------------------------------------------*/
@@ -37,6 +37,7 @@ class BoundingVolumeManager
 	void computeBoundingSphere(ID TreeNode, std::vector<ID>& ObjIDs , int stIndex, int numObjects);
 public:
 	BoundingVolumeManager(Scene *sc);
+	~BoundingVolumeManager();
 	void Update(double dt);
 	void Draw();
 	void calcHierarchy();

@@ -5,7 +5,7 @@ File Name: TestScene2.cpp
 Purpose: Scene for testing objs and loader and shaders
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
+Project: junsu.jang, CS350, Assignment 3 - Spatial Partitioning
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 11/22/2022
 End Header --------------------------------------------------------*/
@@ -42,6 +42,7 @@ End Header --------------------------------------------------------*/
 #include <glm/gtx/string_cast.hpp>
 #include <fstream>
 
+#include <SpatialManager.h>
 #include <BoundingVolumeManager.h>
 #include <ObjManager.h>
 #include <Input.h>
@@ -169,7 +170,7 @@ void TestScene2::Load()
 	}
 
 	{//scene set up 
-		for (int n = 4; n <5; ++n) {
+		for (int n = 4; n <7; ++n) {
 			std::ifstream file{ "../Objects/Section" + std::to_string(n) + ".txt", std::ios::in };
 			if (!file) {
 				std::cout << "Unable to open file: " << "../Objects/Section" + std::to_string(n) + ".txt" << "\n";
@@ -185,7 +186,8 @@ void TestScene2::Load()
 					AssimpLoader assimp{};
 					assimp.LoadModel("../Objects/" + text);
 					MeshData tempMD{ assimp.MakeMeshData(temp->getScale()) };
-					temp->MeshID = meshManager->push_MeshData(tempMD);
+					//temp->MeshID = meshManager->push_MeshData(tempMD);
+					objManager->SetMeshID(temp->getID(), meshManager->push_MeshData(tempMD));
 					entityContainer.emplace<BoundingBox>(temp->getID(), meshManager->make_BoundingBox(temp->MeshID));
 					entityContainer.emplace<BoundingSphere>(temp->getID(), meshManager->make_BoundingSphere(temp->MeshID));
 					temp->objShader = shaderManager->getShader("Geometry stage Shader");
@@ -195,6 +197,8 @@ void TestScene2::Load()
 		}
 
 		bvManager->calcHierarchy();
+		spatialManager->BuildOctree();
+		spatialManager->BuildBSPtree();
 	}
 
 	//Obj load
@@ -519,6 +523,13 @@ void TestScene2::Update(double dt)
 		ImGui::Checkbox("Top_Down Bounding Sphere Hierarchy draw on off", &bvManager->ShouldDraw_TD_BoundingSphereHierarchy);
 		ImGui::Checkbox("Draw all level", &bvManager->DrawAllLevel);
 		ImGui::SliderInt("Draw level", &bvManager->DrawLevel, 0, 20);
+	}//spatialManager
+	if (ImGui::CollapsingHeader("Spatial manager control")) {
+		ImGui::Checkbox("Octree draw on off", &spatialManager->ShouldDraw_Octree);
+		ImGui::Checkbox("BSPtree draw on off", &spatialManager->ShouldDraw_BSPtree);
+		ImGui::Checkbox("debug mesh draw on off", &spatialManager->ShouldDraw_DebugMesh);
+		ImGui::Checkbox("Draw all level", &spatialManager->DrawAllLevel);
+		ImGui::SliderInt("Draw level", &spatialManager->DrawLevel, 0, 8); 
 	}
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -608,7 +619,9 @@ void TestScene2::Draw()
 		shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("boundMax", meshManager->getMeshData(Obj[nowObj]->MeshID).boundBoxMax);
 		shaderManager->getShader("Geometry stage Shader")->sendUniform3fv("boundMin", meshManager->getMeshData(Obj[nowObj]->MeshID).boundBoxMin);
 		Obj[nowObj]->draw();
-		objManager->draw();
+		if (spatialManager->ShouldDraw_DebugMesh == false) {
+			objManager->draw();
+		}
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	}
 
@@ -666,6 +679,7 @@ void TestScene2::Draw()
 		}	
 		//Scene::Draw();
 		bvManager->Draw();
+		spatialManager->Draw();
 	}
 
 	ImGui::Render();

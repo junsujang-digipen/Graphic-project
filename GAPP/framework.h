@@ -5,7 +5,7 @@ File Name: framework.h
 Purpose: IDK
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
+Project: junsu.jang, CS350, Assignment 3 - Spatial Partitioning
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/26/2022
 End Header --------------------------------------------------------*/

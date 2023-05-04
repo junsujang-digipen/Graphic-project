@@ -18,24 +18,27 @@ Any assumption that you make on how to use the application that, if violated, mi
 - Set the "Project" project to start project
 
 Which part of the assignment has been completed?
-- All
+- Octree, BSP tree, GUIs, Scene
 
 Which part of the assignment has NOT been completed (not done, not working, etc.) and explanation on why those parts are not completed?
-- 
+- Split has error
+- serialized and loaded is not implemented
 
 Where the relevant source codes (both C++ and shaders) for the assignment are located. Specify the file path (folder name), file name, function name (or line number).
 - Scene setup 
 	- Folder name: Project
-	- File name: TestScene2.cpp (line 172, 610)
-- Bounding Volumes 
+	- File name: TestScene2.cpp (line 172, 590, 682)
+- Octree 
 	- Folder name: GAPP
-	- File name: MeshManager.cpp (line 35, 56, 109, 154)
-- Bounding Volume Hierarchy
+	- File name: SpatialManager.cpp (line 189, 30, 250)
+- BSP Tree
 	- Folder name: GAPP
-	- File name: BoundingVolumeManager.cpp (line 242, 279, 299)
-- Interactivity / Display
+	- File name: SpatialManager.cpp (line 216, 115, 284)
+- Interactivity
 	- Folder name: Project
-	- File name: TestScene2.cpp (line 504, 525) 
+	- File name: TestScene2.cpp (line 527) 
+	- Folder name: GAPP
+	- File name: SpatialManager.cpp (line 241)
 
 Which machine did you test your application on.
 - Indivisual laptop. 

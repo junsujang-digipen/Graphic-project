@@ -114,6 +114,12 @@
     <ClInclude Include="Input.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="SpatialManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="IntersectTest.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GAPP.cpp">
@@ -195,6 +201,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="Input.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="IntersectTest.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

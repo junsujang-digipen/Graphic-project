@@ -5,7 +5,7 @@ File Name: Scene.h
 Purpose: Base of scenes
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
+Project: junsu.jang, CS350, Assignment 3 - Spatial Partitioning
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 09/27/2022
 End Header --------------------------------------------------------*/
@@ -19,6 +19,7 @@ class MeshManager;
 class Entity;
 class ObjManager;
 class BoundingVolumeManager;
+class SpatialManager;
 class Shader;
 class Scene {
 protected:
@@ -31,6 +32,7 @@ protected:
 	MeshManager* meshManager{};
 	ObjManager* objManager{};
 	BoundingVolumeManager* bvManager{};
+	SpatialManager* spatialManager{};
 	//IMGui manager
 
 	glm::mat4 WTC{};

@@ -5,7 +5,7 @@ File Name: Scene.cpp
 Purpose: Scene for testing objs and loader and shaders
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
+Project: junsu.jang, CS350, Assignment 3 - Spatial Partitioning
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 11/25/2022
 End Header --------------------------------------------------------*/
@@ -17,6 +17,7 @@ End Header --------------------------------------------------------*/
 #include "Entity.h"
 #include "ObjManager.h"
 #include "BoundingVolumeManager.h"
+#include "SpatialManager.h"
 #include "Shader.h"
 
 ID Scene::makeEntity()
@@ -36,6 +37,7 @@ Scene::Scene()
 	meshManager = new MeshManager{};
 	objManager = new ObjManager{this};
 	bvManager = new BoundingVolumeManager{this};
+	spatialManager = new SpatialManager{this};
 	const std::string VshdrNormal{ ShaderHelper::getShaderSourceFromFile("../Shaders/C_DebugShader.vert") };
 	const std::string FshdrNormal{ ShaderHelper::getShaderSourceFromFile("../Shaders/C_DebugShader.frag") };
 	shaderManager->makeShader("Debug Shader");
@@ -55,6 +57,7 @@ Scene::~Scene()
 	delete meshManager;
 	delete objManager;
 	delete bvManager;
+	delete spatialManager;
 
 	entityContainer.clear();
 }

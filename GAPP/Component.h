@@ -5,7 +5,7 @@ File Name: Component.h
 Purpose: For load obj file
 Language: c++
 Platform: x64
-Project: junsu.jang, CS350, Assignment 2 - Bounding Volumes
+Project: junsu.jang, CS350, Assignment 3 - Spatial Partitioning
 Author: Junsu Jang, junsu.jang, 0055891
 Creation date: 02/27/2023
 End Header --------------------------------------------------------*/
