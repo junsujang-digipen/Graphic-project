@@ -63,6 +63,13 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(SolutionDir)x64/Shaders" mkdir "$(SolutionDir)x64/Shaders" 
+if not exist "$(SolutionDir)x64/Objects" mkdir "$(SolutionDir)x64/Objects"
+
+copy /Y "$(SolutionDir)Shaders" "$(SolutionDir)x64/Shaders"  
+xcopy /Y "$(SolutionDir)Objects" "$(SolutionDir)x64/Objects" </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -80,6 +87,13 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(SolutionDir)x64/Shaders" mkdir "$(SolutionDir)x64/Shaders" 
+if not exist "$(SolutionDir)x64/Objects" mkdir "$(SolutionDir)x64/Objects"
+
+copy /Y "$(SolutionDir)Shaders" "$(SolutionDir)x64/Shaders"  
+xcopy /Y "$(SolutionDir)Objects" "$(SolutionDir)x64/Objects" </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectReference Include="..\GAPP\GAPP.vcxproj">
