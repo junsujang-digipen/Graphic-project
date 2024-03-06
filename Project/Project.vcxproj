@@ -67,8 +67,8 @@
       <Command>if not exist "$(SolutionDir)x64/Shaders" mkdir "$(SolutionDir)x64/Shaders" 
 if not exist "$(SolutionDir)x64/Objects" mkdir "$(SolutionDir)x64/Objects"
 
-copy /Y "$(SolutionDir)Shaders" "$(SolutionDir)x64/Shaders"  
-xcopy /Y "$(SolutionDir)Objects" "$(SolutionDir)x64/Objects" </Command>
+xcopy "$(SolutionDir)Shaders" "$(SolutionDir)x64/Shaders" /Y /s
+xcopy "$(SolutionDir)Objects" "$(SolutionDir)x64/Objects" /Y /s</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -91,8 +91,8 @@ xcopy /Y "$(SolutionDir)Objects" "$(SolutionDir)x64/Objects" </Command>
       <Command>if not exist "$(SolutionDir)x64/Shaders" mkdir "$(SolutionDir)x64/Shaders" 
 if not exist "$(SolutionDir)x64/Objects" mkdir "$(SolutionDir)x64/Objects"
 
-copy /Y "$(SolutionDir)Shaders" "$(SolutionDir)x64/Shaders"  
-xcopy /Y "$(SolutionDir)Objects" "$(SolutionDir)x64/Objects" </Command>
+xcopy "$(SolutionDir)Shaders" "$(SolutionDir)x64/Shaders" /Y /s
+xcopy "$(SolutionDir)Objects" "$(SolutionDir)x64/Objects" /Y /s</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
